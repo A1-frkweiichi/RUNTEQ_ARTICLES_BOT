@@ -48,6 +48,11 @@ Layout/SpaceInsideArrayLiteralBrackets:
 Metrics/AbcSize:
   Max: 21
 
+Metrics/BlockLength:
+  Max: 100
+  Exclude:
+    - 'spec/**/*.rb'
+
 # Offense count: 1
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
