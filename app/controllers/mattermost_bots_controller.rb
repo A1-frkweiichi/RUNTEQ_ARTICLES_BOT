@@ -21,7 +21,18 @@ class MattermostBotsController < ApplicationController
     return render json: {} if params[:cancelled]
 
     user = User.find_or_initialize_by(mattermost_id: params[:user_id])
-    update_user_usernames(user, params[:submission])
+    submission = params[:submission]
+
+    sanitize_usernames(submission)
+
+    errors = validate_usernames(submission)
+    if errors.any?
+      log_validation_errors(errors, user)
+      render json: { errors: }
+      return
+    end
+
+    update_user_usernames(user, submission)
 
     if user.save
       log_success_message(user)
@@ -34,10 +45,45 @@ class MattermostBotsController < ApplicationController
 
   private
 
+  def sanitize_usernames(submission)
+    submission['qiita_username'] = sanitize_username(submission['qiita_username'])
+    submission['zenn_username'] = sanitize_username(submission['zenn_username'])
+  end
+
+  def sanitize_username(username)
+    username.to_s.strip.sub(/^@/, '')
+  end
+
+  def validate_usernames(submission)
+    errors = {}
+    qiita_username = submission['qiita_username'].presence
+    zenn_username = submission['zenn_username'].presence
+
+    errors[:qiita_username] = "一致するユーザー名が見つかりません" if qiita_username && !qiita_username_exists?(qiita_username)
+    errors[:zenn_username] = "一致するユーザー名が見つかりません" if zenn_username && !zenn_username_exists?(zenn_username)
+
+    errors
+  end
+
+  def qiita_username_exists?(username)
+    response = HTTParty.get("https://qiita.com/api/v2/users/#{username}")
+    response.code == 200
+  end
+
+  def zenn_username_exists?(username)
+    response = HTTParty.get("https://zenn.dev/api/users/#{username}")
+    response.code == 200
+  end
+
+  def log_validation_errors(errors, user)
+    error_messages = errors.map { |field, message| "#{field}: #{message}" }.join(", ")
+    Rails.logger.error "登録失敗👀 Mattermost ID: #{user.mattermost_id}. Validation Errors: #{error_messages}"
+  end
+
   def verify_mattermost_token
-    unless params[:token] == ENV['MATTERMOST_BOT_TOKEN']
-      render json: { text: 'Unauthorized: TOKENによるエラー' }, status: :unauthorized
-    end
+    return if params[:token] == ENV['MATTERMOST_BOT_TOKEN']
+
+    render json: { text: 'Unauthorized: TOKENによるエラー' }, status: :unauthorized
   end
 
   def build_dialog_data(user)
@@ -62,7 +108,7 @@ class MattermostBotsController < ApplicationController
     {
       display_name: "#{service} ユーザー名",
       name: "#{service.downcase}_username",
-      type: "text",
+      type: 'text',
       placeholder: "#{service.downcase}_username",
       optional: true,
       default: username.to_s,
@@ -74,11 +120,11 @@ class MattermostBotsController < ApplicationController
   def send_mattermost_request(dialog_data)
     mattermost_url = "#{ENV['MATTERMOST_URL']}/api/v4/actions/dialogs/open"
     headers = {
-      'Content-Type' => 'application/json',
-      'Authorization' => "Bearer #{ENV['MATTERMOST_BOT_TOKEN']}"
+      'Content-Type': 'application/json',
+      'Authorization': "Bearer #{ENV['MATTERMOST_BOT_TOKEN']}"
     }
 
-    HTTParty.post(mattermost_url, body: dialog_data.to_json, headers: headers)
+    HTTParty.post(mattermost_url, body: dialog_data.to_json, headers:)
   end
 
   def log_mattermost_response(response)
@@ -87,8 +133,8 @@ class MattermostBotsController < ApplicationController
   end
 
   def update_user_usernames(user, submission)
-    user.qiita_username = submission['qiita_username'].to_s.strip.presence
-    user.zenn_username = submission['zenn_username'].to_s.strip.presence
+    user.qiita_username = submission['qiita_username'].presence
+    user.zenn_username = submission['zenn_username'].presence
   end
 
   def log_success_message(user)
