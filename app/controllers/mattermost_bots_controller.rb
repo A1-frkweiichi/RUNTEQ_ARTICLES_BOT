@@ -48,6 +48,7 @@ class MattermostBotsController < ApplicationController
   def sanitize_usernames(submission)
     submission['qiita_username'] = sanitize_username(submission['qiita_username'])
     submission['zenn_username'] = sanitize_username(submission['zenn_username'])
+    submission['x_username'] = sanitize_username(submission['x_username'])
   end
 
   def sanitize_username(username)
@@ -95,8 +96,9 @@ class MattermostBotsController < ApplicationController
         title: "【らんてくん おすすめ記事】登録フォーム",
         introduction_text: "RUNTEQ現役・卒業生〜講師陣の高評価記事をお知らせする[X(旧: Twitter)bot](https://x.com/runtekn_rec_art)です。",
         elements: [
-          build_username_element("Qiita", user&.qiita_username),
-          build_username_element("Zenn", user&.zenn_username)
+          build_username_element("Qiita", user&.qiita_username, nil),
+          build_username_element("Zenn", user&.zenn_username, "Qiita もしくは Zennを登録すると記事が紹介対象になります。"),
+          build_username_element("X", user&.x_username, "Xを登録すると記事紹介時にメンションされます。")
         ],
         submit_label: "登録",
         notify_on_cancel: true
@@ -104,7 +106,7 @@ class MattermostBotsController < ApplicationController
     }
   end
 
-  def build_username_element(service, username)
+  def build_username_element(service, username, help_text)
     {
       display_name: "#{service} ユーザー名",
       name: "#{service.downcase}_username",
@@ -113,7 +115,8 @@ class MattermostBotsController < ApplicationController
       optional: true,
       default: username.to_s,
       min_length: 0,
-      max_length: 30
+      max_length: 30,
+      help_text:
     }
   end
 
@@ -135,13 +138,15 @@ class MattermostBotsController < ApplicationController
   def update_user_usernames(user, submission)
     user.qiita_username = submission['qiita_username'].presence
     user.zenn_username = submission['zenn_username'].presence
+    user.x_username = submission['x_username'].presence
   end
 
   def log_success_message(user)
     message = "登録成功！\n" \
       "Mattermost ID: #{user.mattermost_id}\n" \
       "Qiitaユーザー名: #{user.qiita_username || '(削除されました)'}\n" \
-      "Zennユーザー名: #{user.zenn_username || '(削除されました)'}"
+      "Zennユーザー名: #{user.zenn_username || '(削除されました)'}\n" \
+      "Xユーザー名: #{user.x_username || '(削除されました)'}"
     Rails.logger.info message
   end
 
