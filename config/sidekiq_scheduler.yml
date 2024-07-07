@@ -1,0 +1,4 @@
+fetch_articles:
+  cron: "0 5 * * 1"
+  class: "FetchArticlesJob"
+  queue: default
