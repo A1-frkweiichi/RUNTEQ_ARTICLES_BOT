@@ -8,7 +8,6 @@ RSpec.describe MattermostBotsController, type: :controller do
   describe 'POST #open_dialog' do
     context 'with valid token' do
       before do
-        request.headers['Authorization'] = valid_token
         allow(controller).to receive(:verify_mattermost_token).and_return(true)
         allow(User).to receive(:find_by).with(mattermost_id: 'test_user_id').and_return(user)
         response_double = double('response', success?: true, code: 200, body: 'response body')
@@ -16,19 +15,15 @@ RSpec.describe MattermostBotsController, type: :controller do
       end
 
       it 'renders the success message' do
-        post :open_dialog, params: { user_id: user.mattermost_id, trigger_id: 'test_trigger' }
+        post :open_dialog, params: { user_id: user.mattermost_id, trigger_id: 'test_trigger', token: valid_token }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['text']).to eq("【らんてくん おすすめ記事】登録フォームを開きました")
       end
     end
 
     context 'with invalid token' do
-      before do
-        request.headers['Authorization'] = invalid_token
-      end
-
       it 'renders unauthorized error' do
-        post :open_dialog, params: { user_id: user.mattermost_id, trigger_id: 'test_trigger' }
+        post :open_dialog, params: { user_id: user.mattermost_id, trigger_id: 'test_trigger', token: invalid_token }
         expect(response).to have_http_status(:unauthorized)
         expect(JSON.parse(response.body)['text']).to eq('Unauthorized: TOKENによるエラー')
       end
@@ -36,7 +31,7 @@ RSpec.describe MattermostBotsController, type: :controller do
   end
 
   describe 'POST #submit_dialog' do
-    let(:valid_submission) { { 'qiita_username' => 'valid_qiita', 'zenn_username' => 'valid_zenn' } }
+    let(:valid_submission) { { 'qiita_username' => 'valid_qiita', 'zenn_username' => 'valid_zenn', 'x_username' => 'valid_x' } }
     let(:invalid_submission) { { 'qiita_username' => 'invalid_qiita', 'zenn_username' => 'invalid_zenn' } }
 
     before do
@@ -55,11 +50,6 @@ RSpec.describe MattermostBotsController, type: :controller do
     end
 
     context 'with valid submission' do
-      before do
-        request.headers['Authorization'] = valid_token
-        allow(controller).to receive(:verify_mattermost_token).and_return(true)
-      end
-
       it 'saves the user and returns success' do
         post :submit_dialog, params: { user_id: user.mattermost_id, submission: valid_submission }
         expect(response).to have_http_status(:ok)
@@ -67,15 +57,11 @@ RSpec.describe MattermostBotsController, type: :controller do
         user.reload
         expect(user.qiita_username).to eq('valid_qiita')
         expect(user.zenn_username).to eq('valid_zenn')
+        expect(user.x_username).to eq('valid_x')
       end
     end
 
     context 'with invalid submission' do
-      before do
-        request.headers['Authorization'] = valid_token
-        allow(controller).to receive(:verify_mattermost_token).and_return(true)
-      end
-
       it 'returns validation errors' do
         post :submit_dialog, params: { user_id: user.mattermost_id, submission: invalid_submission }
         expect(response).to have_http_status(:ok)
