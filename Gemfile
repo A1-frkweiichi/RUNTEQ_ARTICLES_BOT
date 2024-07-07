@@ -50,6 +50,7 @@ group :development, :test do
   gem "rubocop-rails", require: false
   gem "rubocop-rspec", require: false
   gem "spring"
+  gem "webmock", require: false
 end
 
 group :development do
