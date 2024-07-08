@@ -3,7 +3,7 @@ require 'sidekiq-scheduler'
 require 'sidekiq/web'
 
 Sidekiq.configure_server do |config|
-  config.redis = { url: ENV['REDIS_URL'] || 'redis://localhost:6379/0' }
+  config.redis = { url: ENV['REDIS_TLS_URL'] || 'redis://localhost:6379/0' }
 
   config.on(:startup) do
     schedule_file = File.expand_path('../sidekiq_scheduler.yml', __dir__)
@@ -21,7 +21,7 @@ Sidekiq.configure_server do |config|
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = { url: ENV['REDIS_URL'] || 'redis://localhost:6379/0' }
+  config.redis = { url: ENV['REDIS_TLS_URL'] || 'redis://localhost:6379/0' }
 end
 
 if Rails.env.production?
