@@ -33,7 +33,7 @@ gem "bootsnap", require: false
 # gem "rack-cors"
 
 gem "httparty"
-gem "redis", ">= 4.0.1"
+gem "redis"
 gem "sidekiq"
 gem "sidekiq-scheduler"
 
