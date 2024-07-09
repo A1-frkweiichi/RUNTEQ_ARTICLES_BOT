@@ -6,12 +6,13 @@ class ArticleFetcherService
   ZENN_RATE_LIMIT = 5 # 15分あたりの最大リクエスト数: 240記事相当
   ZENN_RATE_WINDOW = 900 # 15分（秒）
 
-  def self.fetch_for_user(user)
-    new(user).fetch_all
+  def self.fetch_for_user(user, years = 1)
+    new(user, years).fetch_all
   end
 
-  def initialize(user)
+  def initialize(user, years)
     @user = user
+    @years = years
     @rate_limits = {
       qiita: { requests: 0, window_start: Time.now },
       zenn: { requests: 0, window_start: Time.now }
@@ -37,7 +38,9 @@ class ArticleFetcherService
       articles = parse_articles(response, platform)
       break if articles.empty?
 
-      save_articles(articles, platform)
+      articles.each do |article_data|
+        save_article(article_data, platform)
+      end
 
       total_count += articles.size
       break if should_stop_fetching?(total_count, response, platform, articles)
@@ -94,13 +97,8 @@ class ArticleFetcherService
     when 'qiita'
       total_count >= response.headers['total-count'].to_i || articles.empty?
     when 'zenn'
-      data = JSON.parse(response.body)
-      data['total_count'].nil? ? articles.size < 48 : total_count >= data['total_count'].to_i
+      articles.size < 48 || (JSON.parse(response.body)['total_count'] && total_count >= JSON.parse(response.body)['total_count'].to_i)
     end
-  end
-
-  def save_articles(articles, platform)
-    articles.each { |article| save_article(article, platform) }
   end
 
   def save_article(article_data, platform)
@@ -117,6 +115,7 @@ class ArticleFetcherService
     )
 
     article.save!
+    article.update_postable_status(@years)
   end
 
   def article_url(article_data, platform)

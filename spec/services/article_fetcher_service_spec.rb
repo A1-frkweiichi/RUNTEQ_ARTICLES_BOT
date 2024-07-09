@@ -1,8 +1,8 @@
-# spec/services/article_fetcher_service_spec.rb
+require 'rails_helper'
 
 RSpec.describe ArticleFetcherService do
   let(:user) { create(:user) }
-  let(:service) { described_class.new(user) }
+  let(:service) { described_class.new(user, 1) }
 
   describe '#fetch_all' do
     before do
@@ -12,6 +12,26 @@ RSpec.describe ArticleFetcherService do
 
     it 'fetches articles from both platforms' do
       expect { service.fetch_all }.to change { Article.count }.by(4)
+    end
+
+    it 'fetches and saves articles with correct attributes' do
+      service.fetch_all
+
+      qiita_article = Article.find_by(source_platform: 'qiita', external_id: 'qiita_1')
+      expect(qiita_article).to have_attributes(
+        title: 'Qiita Article 1',
+        article_url: "https://qiita.com/#{user.qiita_username}/1",
+        likes_count: 10,
+        is_postable: false
+      )
+
+      zenn_article = Article.find_by(source_platform: 'zenn', external_id: 'zenn_1')
+      expect(zenn_article).to have_attributes(
+        title: 'Zenn Article 1',
+        article_url: "https://zenn.dev/#{user.zenn_username}/1",
+        likes_count: 15,
+        is_postable: false
+      )
     end
   end
 

@@ -274,6 +274,8 @@ GEM
     ruby-progressbar (1.13.0)
     rufus-scheduler (3.9.1)
       fugit (~> 1.1, >= 1.1.6)
+    shoulda-matchers (6.2.0)
+      activesupport (>= 5.2.0)
     sidekiq (7.2.4)
       concurrent-ruby (< 2)
       connection_pool (>= 2.3.0)
@@ -326,6 +328,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   rubocop-rspec
+  shoulda-matchers
   sidekiq
   sidekiq-scheduler
   spring
