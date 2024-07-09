@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_07_063148) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_09_140435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,6 +24,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_07_063148) do
     t.integer "likes_count", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_postable", default: false
     t.index ["external_id"], name: "index_articles_on_external_id", unique: true
     t.index ["user_id"], name: "index_articles_on_user_id"
   end
