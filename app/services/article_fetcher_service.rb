@@ -1,10 +1,10 @@
 require 'httparty'
 
 class ArticleFetcherService
-  QIITA_RATE_LIMIT = 1000 # 1時間あたりの最大リクエスト数: 10,000記事相当
+  QIITA_RATE_LIMIT = 1000 # 1時間あたりの最大リクエスト数: 最大10,000記事
   QIITA_RATE_WINDOW = 3600 # 1時間（秒）
-  ZENN_RATE_LIMIT = 5 # 15分あたりの最大リクエスト数: 240記事相当
-  ZENN_RATE_WINDOW = 900 # 15分（秒）
+  ZENN_RATE_LIMIT = 10 # 10分あたりの最大リクエスト数: 最大480記事
+  ZENN_RATE_WINDOW = 600 # 10分（秒）
 
   def self.fetch_for_user(user, years = 1)
     new(user, years).fetch_all
@@ -132,7 +132,7 @@ class ArticleFetcherService
 
   def qiita_headers
     {
-      'Authorization' => "Bearer #{ENV['QIITA_ACCESS_TOKEN']}",
+      'Authorization' => "Bearer #{ENV.fetch('QIITA_ACCESS_TOKEN', nil)}",
       'Content-Type' => 'application/json'
     }
   end

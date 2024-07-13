@@ -1,0 +1,7 @@
+<%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>) のおすすめ記事だぞ！
+
+『<%= @article.title %>』
+<%= @article.article_url %>
+
+<%= "@" + @article.user.x_username if @article.user.x_username.present? %>
+#RUNTEQ <%= @article.source_platform_hashtag %> no.<%= @post.id %>

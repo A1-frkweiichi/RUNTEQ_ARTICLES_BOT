@@ -10,9 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_09_140435) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_13_142804) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "post_status", %w[pending success failed]
 
   create_table "articles", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -21,12 +25,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_09_140435) do
     t.string "title", null: false
     t.string "article_url", null: false
     t.datetime "published_at", null: false
-    t.integer "likes_count", null: false
+    t.integer "likes_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_postable", default: false
+    t.integer "post_count", default: 0, null: false
     t.index ["external_id"], name: "index_articles_on_external_id", unique: true
     t.index ["user_id"], name: "index_articles_on_user_id"
+  end
+
+  create_table "posts", force: :cascade do |t|
+    t.bigint "article_id", null: false
+    t.enum "status", default: "pending", null: false, enum_type: "post_status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["article_id"], name: "index_posts_on_article_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -43,4 +56,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_09_140435) do
   end
 
   add_foreign_key "articles", "users"
+  add_foreign_key "posts", "articles"
 end

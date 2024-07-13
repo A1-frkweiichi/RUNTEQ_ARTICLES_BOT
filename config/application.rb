@@ -31,5 +31,7 @@ module RunteqArticlesBot
     config.active_job.queue_adapter = :sidekiq
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore, key: '_runteq_articles_bot_session'
+    config.middleware.use Bugsnag::Rack
+    config.exceptions_app = routes
   end
 end

@@ -1,1 +1,224 @@
 inherit_from: .rubocop_todo.yml
+
+AllCops:
+  NewCops: enable
+
+Gemspec:
+  DeprecatedAttributeAssignment:
+    Enabled: true
+  DevelopmentDependencies:
+    Enabled: true
+  RequireMFA:
+    Enabled: true
+
+Layout:
+  LineContinuationLeadingSpace:
+    Enabled: true
+  LineContinuationSpacing:
+    Enabled: true
+  LineEndStringConcatenationIndentation:
+    Enabled: true
+  SpaceBeforeBrackets:
+    Enabled: true
+
+Lint:
+  AmbiguousAssignment:
+    Enabled: true
+  AmbiguousOperatorPrecedence:
+    Enabled: true
+  AmbiguousRange:
+    Enabled: true
+  ConstantOverwrittenInRescue:
+    Enabled: true
+  DeprecatedConstants:
+    Enabled: true
+  DuplicateBranch:
+    Enabled: true
+  DuplicateMagicComment:
+    Enabled: true
+  DuplicateMatchPattern:
+    Enabled: true
+  DuplicateRegexpCharacterClassElement:
+    Enabled: true
+  EmptyBlock:
+    Enabled: true
+  EmptyClass:
+    Enabled: true
+  EmptyInPattern:
+    Enabled: true
+  IncompatibleIoSelectWithFiberScheduler:
+    Enabled: true
+  ItWithoutArgumentsInBlock:
+    Enabled: true
+  LambdaWithoutLiteralBlock:
+    Enabled: true
+  LiteralAssignmentInCondition:
+    Enabled: true
+  MixedCaseRange:
+    Enabled: true
+  NoReturnInBeginEndBlocks:
+    Enabled: true
+  NonAtomicFileOperation:
+    Enabled: true
+  NumberedParameterAssignment:
+    Enabled: true
+  OrAssignmentToConstant:
+    Enabled: true
+  RedundantDirGlobSort:
+    Enabled: true
+  RedundantRegexpQuantifiers:
+    Enabled: true
+  RefinementImportMethods:
+    Enabled: true
+  RequireRangeParentheses:
+    Enabled: true
+  RequireRelativeSelfPath:
+    Enabled: true
+  SymbolConversion:
+    Enabled: true
+  ToEnumArguments:
+    Enabled: true
+  TripleQuotes:
+    Enabled: true
+  UnexpectedBlockArity:
+    Enabled: true
+  UnmodifiedReduceAccumulator:
+    Enabled: true
+  UselessRescue:
+    Enabled: true
+  UselessRuby2Keywords:
+    Enabled: true
+
+Metrics:
+  CollectionLiteralLength:
+    Enabled: true
+
+Naming:
+  BlockForwarding:
+    Enabled: true
+
+Security:
+  CompoundHash:
+    Enabled: true
+  IoMethods:
+    Enabled: true
+
+Style:
+  ArgumentsForwarding:
+    Enabled: true
+  ArrayIntersect:
+    Enabled: true
+  CollectionCompact:
+    Enabled: true
+  ComparableClamp:
+    Enabled: true
+  ConcatArrayLiterals:
+    Enabled: true
+  DataInheritance:
+    Enabled: true
+  DirEmpty:
+    Enabled: true
+  DocumentDynamicEvalDefinition:
+    Enabled: true
+  EmptyHeredoc:
+    Enabled: true
+  EndlessMethod:
+    Enabled: true
+  EnvHome:
+    Enabled: true
+  ExactRegexpMatch:
+    Enabled: true
+  FetchEnvVar:
+    Enabled: true
+  FileEmpty:
+    Enabled: true
+  FileRead:
+    Enabled: true
+  FileWrite:
+    Enabled: true
+  HashConversion:
+    Enabled: true
+  HashExcept:
+    Enabled: true
+  IfWithBooleanLiteralBranches:
+    Enabled: true
+  InPatternThen:
+    Enabled: true
+  MagicCommentFormat:
+    Enabled: true
+  MapCompactWithConditionalBlock:
+    Enabled: true
+  MapIntoArray:
+    Enabled: true
+  MapToHash:
+    Enabled: true
+  MapToSet:
+    Enabled: true
+  MinMaxComparison:
+    Enabled: true
+  MultilineInPatternThen:
+    Enabled: true
+  NegatedIfElseCondition:
+    Enabled: true
+  NestedFileDirname:
+    Enabled: true
+  NilLambda:
+    Enabled: true
+  NumberedParameters:
+    Enabled: true
+  NumberedParametersLimit:
+    Enabled: true
+  ObjectThen:
+    Enabled: true
+  OpenStructUse:
+    Enabled: true
+  OperatorMethodCall:
+    Enabled: true
+  QuotedSymbols:
+    Enabled: true
+  RedundantArgument:
+    Enabled: true
+  RedundantArrayConstructor:
+    Enabled: true
+  RedundantConstantBase:
+    Enabled: true
+  RedundantCurrentDirectoryInPath:
+    Enabled: true
+  RedundantDoubleSplatHashBraces:
+    Enabled: true
+  RedundantEach:
+    Enabled: true
+  RedundantFilterChain:
+    Enabled: true
+  RedundantHeredocDelimiterQuotes:
+    Enabled: true
+  RedundantInitialize:
+    Enabled: true
+  RedundantLineContinuation:
+    Enabled: true
+  RedundantRegexpArgument:
+    Enabled: true
+  RedundantRegexpConstructor:
+    Enabled: true
+  RedundantSelfAssignmentBranch:
+    Enabled: true
+  RedundantStringEscape:
+    Enabled: true
+  ReturnNilInPredicateMethodDefinition:
+    Enabled: true
+  SelectByRegexp:
+    Enabled: true
+  SendWithLiteralMethodName:
+    Enabled: true
+  SingleLineDoEndBlock:
+    Enabled: true
+  StringChars:
+    Enabled: true
+  SuperArguments:
+    Enabled: true
+  SuperWithArgsParentheses:
+    Enabled: true
+  SwapValues:
+    Enabled: true
+  YAMLFileRead:
+    Enabled: true

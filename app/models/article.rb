@@ -1,5 +1,6 @@
 class Article < ApplicationRecord
   belongs_to :user
+  has_many :posts
 
   validates :user_id, presence: true
   validates :source_platform, presence: true
@@ -22,5 +23,20 @@ class Article < ApplicationRecord
 
     self.is_postable = years_since_published < years && likes_count >= required_likes
     save
+  end
+
+  def self.random_postable_article
+    where(is_postable: true).order(:post_count, 'RANDOM()').first
+  end
+
+  def source_platform_hashtag
+    case source_platform
+    when 'qiita'
+      '#Qiita'
+    when 'zenn'
+      '#Zenn'
+    else
+      ''
+    end
   end
 end
