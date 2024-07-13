@@ -132,7 +132,7 @@ class ArticleFetcherService
 
   def qiita_headers
     {
-      'Authorization' => "Bearer #{ENV['QIITA_ACCESS_TOKEN']}",
+      'Authorization' => "Bearer #{ENV.fetch('QIITA_ACCESS_TOKEN', nil)}",
       'Content-Type' => 'application/json'
     }
   end

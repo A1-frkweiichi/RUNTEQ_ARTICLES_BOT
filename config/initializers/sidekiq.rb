@@ -32,6 +32,6 @@ end
 
 if Rails.env.production?
   Sidekiq::Web.use(Rack::Auth::Basic) do |user, password|
-    [user, password] == [ENV['SIDEKIQ_WEB_USER'], ENV['SIDEKIQ_WEB_PASSWORD']]
+    [user, password] == [ENV.fetch('SIDEKIQ_WEB_USER', nil), ENV.fetch('SIDEKIQ_WEB_PASSWORD', nil)]
   end
 end

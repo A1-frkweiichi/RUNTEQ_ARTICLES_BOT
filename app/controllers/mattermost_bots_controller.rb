@@ -121,10 +121,10 @@ class MattermostBotsController < ApplicationController
   end
 
   def send_mattermost_request(dialog_data)
-    mattermost_url = "#{ENV['MATTERMOST_URL']}/api/v4/actions/dialogs/open"
+    mattermost_url = "#{ENV.fetch('MATTERMOST_URL', nil)}/api/v4/actions/dialogs/open"
     headers = {
       'Content-Type': 'application/json',
-      'Authorization': "Bearer #{ENV['MATTERMOST_BOT_TOKEN']}"
+      Authorization: "Bearer #{ENV.fetch('MATTERMOST_BOT_TOKEN', nil)}"
     }
 
     HTTParty.post(mattermost_url, body: dialog_data.to_json, headers:)
@@ -143,10 +143,10 @@ class MattermostBotsController < ApplicationController
 
   def log_success_message(user)
     message = "登録成功！\n" \
-      "Mattermost ID: #{user.mattermost_id}\n" \
-      "Qiitaユーザー名: #{user.qiita_username || '(削除されました)'}\n" \
-      "Zennユーザー名: #{user.zenn_username || '(削除されました)'}\n" \
-      "Xユーザー名: #{user.x_username || '(削除されました)'}"
+              "Mattermost ID: #{user.mattermost_id}\n" \
+              "Qiitaユーザー名: #{user.qiita_username || '(削除されました)'}\n" \
+              "Zennユーザー名: #{user.zenn_username || '(削除されました)'}\n" \
+              "Xユーザー名: #{user.x_username || '(削除されました)'}"
     Rails.logger.info message
   end
 

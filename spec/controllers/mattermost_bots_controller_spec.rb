@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe MattermostBotsController, type: :controller do
   let(:user) { create(:user, mattermost_id: 'test_user_id') }
-  let(:valid_token) { ENV['MATTERMOST_BOT_TOKEN'] }
+  let(:valid_token) { ENV.fetch('MATTERMOST_BOT_TOKEN', nil) }
   let(:invalid_token) { 'invalid_token' }
 
   describe 'POST #open_dialog' do
