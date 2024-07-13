@@ -117,6 +117,7 @@ GEM
     globalid (1.2.1)
       activesupport (>= 6.1)
     hashdiff (1.1.0)
+    holiday_jp (0.8.1)
     httparty (0.22.0)
       csv
       mini_mime (>= 1.0.0)
@@ -321,6 +322,7 @@ DEPENDENCIES
   debug
   dotenv-rails
   factory_bot_rails
+  holiday_jp
   httparty
   overcommit
   pg (~> 1.1)

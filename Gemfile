@@ -33,6 +33,7 @@ gem "bootsnap", require: false
 # gem "rack-cors"
 
 gem "bugsnag"
+gem "holiday_jp"
 gem "httparty"
 gem "redis"
 gem "sidekiq"
