@@ -65,6 +65,21 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  config.before(:each) do
+    stub_request(:post, "https://notify.bugsnag.com/")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Bugsnag-Api-Key' => ENV.fetch('BUGSNAG_API_KEY', 'dummy_key'),
+          'Bugsnag-Payload-Version' => '4.0',
+          'Bugsnag-Sent-At' => /.*/,
+          'Content-Type' => 'application/json',
+          'User-Agent' => 'Ruby'
+        }
+      )
+      .to_return(status: 200, body: "", headers: {})
+  end
 end
 
 Shoulda::Matchers.configure do |config|
