@@ -1,1 +1,7 @@
-Hello Ruby!!!
+今日のおすすめ記事だぞ！
+
+『<%= @article.title %>』
+<%= @article.article_url %>
+
+<%= "@" + @article.user.x_username if @article.user.x_username.present? %>
+#RUNTEQ <%= source_platform_hashtag(@article.source_platform) %>

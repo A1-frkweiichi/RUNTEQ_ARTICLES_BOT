@@ -23,4 +23,8 @@ class Article < ApplicationRecord
     self.is_postable = years_since_published < years && likes_count >= required_likes
     save
   end
+
+  def self.random_postable_article
+    where(is_postable: true).order('RANDOM()').first
+  end
 end

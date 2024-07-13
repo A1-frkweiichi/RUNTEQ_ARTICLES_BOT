@@ -1,13 +1,16 @@
 require 'x'
+require 'erb'
 
 class PostToXService
-  MESSAGE_FILE_PATH = Rails.root.join('x_bot_message.txt')
+  TEMPLATE_PATH = Rails.root.join('x_bot_message.txt')
 
   def initialize
-    @message = read_message_from_file
+    @article = Article.random_postable_article
   end
 
   def call
+    return unless @article
+
     x_credentials = {
       api_key: ENV.fetch('X_API_KEY', nil),
       api_key_secret: ENV.fetch('X_API_KEY_SECRET', nil),
@@ -17,7 +20,8 @@ class PostToXService
     }
 
     x_client = X::Client.new(**x_credentials)
-    post = x_client.post("tweets", { text: @message }.to_json)
+    message = generate_message
+    post = x_client.post("tweets", { text: message }.to_json)
     post["data"]
   rescue StandardError => e
     Rails.logger.error "Failed to post to X: #{e.message}"
@@ -26,7 +30,19 @@ class PostToXService
 
   private
 
-  def read_message_from_file
-    File.read(MESSAGE_FILE_PATH).strip
+  def generate_message
+    template = File.read(TEMPLATE_PATH)
+    ERB.new(template).result(binding)
+  end
+
+  def source_platform_hashtag(platform)
+    case platform
+    when 'qiita'
+      '#Qiita'
+    when 'zenn'
+      '#Zenn'
+    else
+      ''
+    end
   end
 end

@@ -6,7 +6,7 @@ class PostToXController < ApplicationController
     if post_data
       render json: { status: 'success', message: 'Posted to X successfully', post: post_data }
     else
-      render json: { status: 'error', message: 'Failed to post to X' }
+      render json: { status: 'error', message: 'Failed to post to X' }, status: :unprocessable_entity
     end
   end
 end
