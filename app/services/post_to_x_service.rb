@@ -48,6 +48,7 @@ class PostToXService
   def handle_response(post_response)
     if post_response["data"]
       @post.update!(status: :success)
+      @article.increment!(:post_count)
     else
       @post.update!(status: :failed)
     end

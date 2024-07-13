@@ -26,7 +26,7 @@ class Article < ApplicationRecord
   end
 
   def self.random_postable_article
-    where(is_postable: true).order('RANDOM()').first
+    where(is_postable: true).order(:post_count, 'RANDOM()').first
   end
 
   def source_platform_hashtag
