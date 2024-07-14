@@ -4,7 +4,6 @@ class PostToXHolidayJob < ApplicationJob
 
   def perform
     return unless HolidayJp.holiday?(Date.today)
-    return if Date.today.saturday? || Date.today.sunday?
 
     PostToXService.new.call
   end
