@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe MattermostBotsController, type: :controller do
+RSpec.describe RegisterToMattermostController, type: :controller do
   let(:user) { create(:user, mattermost_id: 'test_user_id') }
   let(:valid_token) { ENV.fetch('MATTERMOST_BOT_TOKEN', nil) }
   let(:invalid_token) { 'invalid_token' }
@@ -11,7 +11,7 @@ RSpec.describe MattermostBotsController, type: :controller do
         allow(controller).to receive(:verify_mattermost_token).and_return(true)
         allow(User).to receive(:find_by).with(mattermost_id: 'test_user_id').and_return(user)
         response_double = double('response', success?: true, code: 200, body: 'response body')
-        allow(controller).to receive(:send_mattermost_request).and_return(response_double)
+        allow(MattermostRegistrationService).to receive(:send_mattermost_request).and_return(response_double)
       end
 
       it 'renders the success message' do
@@ -35,10 +35,10 @@ RSpec.describe MattermostBotsController, type: :controller do
     let(:invalid_submission) { { 'qiita_username' => 'invalid_qiita', 'zenn_username' => 'invalid_zenn' } }
 
     before do
-      allow(controller).to receive(:qiita_username_exists?).with('valid_qiita').and_return(true)
-      allow(controller).to receive(:zenn_username_exists?).with('valid_zenn').and_return(true)
-      allow(controller).to receive(:qiita_username_exists?).with('invalid_qiita').and_return(false)
-      allow(controller).to receive(:zenn_username_exists?).with('invalid_zenn').and_return(false)
+      allow(MattermostUsernamesService).to receive(:qiita_username_exists?).with('valid_qiita').and_return(true)
+      allow(MattermostUsernamesService).to receive(:zenn_username_exists?).with('valid_zenn').and_return(true)
+      allow(MattermostUsernamesService).to receive(:qiita_username_exists?).with('invalid_qiita').and_return(false)
+      allow(MattermostUsernamesService).to receive(:zenn_username_exists?).with('invalid_zenn').and_return(false)
     end
 
     context 'when submission is cancelled' do
