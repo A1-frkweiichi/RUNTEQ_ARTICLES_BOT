@@ -6,5 +6,8 @@ class PostToXHolidayJob < ApplicationJob
     return unless HolidayJp.holiday?(Date.today)
 
     PostToXService.new.call
+  rescue StandardError => e
+    Bugsnag.notify(e)
+    raise e
   end
 end
