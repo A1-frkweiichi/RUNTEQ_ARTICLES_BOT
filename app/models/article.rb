@@ -2,6 +2,11 @@ class Article < ApplicationRecord
   belongs_to :user
   has_many :posts
 
+  REQUIRED_LIKES = {
+    'qiita' => 30,
+    'zenn' => 20
+  }.freeze
+
   validates :user_id, presence: true
   validates :source_platform, presence: true
   validates :external_id, presence: true, uniqueness: true
@@ -12,10 +17,7 @@ class Article < ApplicationRecord
 
   enum source_platform: { qiita: 'qiita', zenn: 'zenn' }
 
-  REQUIRED_LIKES = {
-    'qiita' => 25,
-    'zenn' => 20
-  }.freeze
+  scope :postable, -> { where(is_postable: true, is_active: true) }
 
   def update_postable_status(years = 1)
     years_since_published = ((Time.current - published_at.to_time) / 1.year).to_i
@@ -26,7 +28,7 @@ class Article < ApplicationRecord
   end
 
   def self.random_postable_article
-    where(is_postable: true).order(:post_count, 'RANDOM()').first
+    postable.order(:post_count, 'RANDOM()').first
   end
 
   def source_platform_hashtag

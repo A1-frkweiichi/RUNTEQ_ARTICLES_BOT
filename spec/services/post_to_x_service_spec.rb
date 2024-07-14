@@ -4,12 +4,25 @@ RSpec.describe PostToXService, type: :service do
   let(:article) { create(:article, is_postable: true) }
   let(:x_client) { instance_double(X::Client) }
   let(:post_response) { { "data" => { "id" => "12345" } } }
-  let(:service) { PostToXService.new }
+  let(:service) { described_class.new }
 
   before do
     allow(Article).to receive(:random_postable_article).and_return(article)
     allow(X::Client).to receive(:new).and_return(x_client)
     allow(x_client).to receive(:post).and_return(post_response)
+    allow(File).to receive(:read).and_return("Template content")
+  end
+
+  describe '#initialize' do
+    context 'when there are no postable articles' do
+      before do
+        allow(Article).to receive(:random_postable_article).and_return(nil)
+      end
+
+      it 'raises an error' do
+        expect { described_class.new }.to raise_error('No postable articles found')
+      end
+    end
   end
 
   describe '#call' do

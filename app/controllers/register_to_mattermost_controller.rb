@@ -6,15 +6,11 @@ class RegisterToMattermostController < ApplicationController
   def open_dialog
     user = User.find_by(mattermost_id: params[:user_id])
     dialog_data = MattermostRegistrationService.build_dialog_data(user, request.base_url, params[:trigger_id])
-
     response = MattermostRegistrationService.send_mattermost_request(dialog_data)
+
     log_mattermost_response(response)
 
-    if response.success?
-      render json: { text: "【らんてくん おすすめ記事】登録フォームを開きました" }
-    else
-      render json: { text: "【らんてくん おすすめ記事】登録フォームを開けませんでした: #{response.body}" }
-    end
+    render json: { text: response.success? ? "【らんてくん おすすめ記事】登録フォームを開きました" : "【らんてくん おすすめ記事】登録フォームを開けませんでした: #{response.body}" }
   end
 
   def submit_dialog
@@ -24,8 +20,8 @@ class RegisterToMattermostController < ApplicationController
     submission = params[:submission]
 
     MattermostUsernamesService.sanitize_usernames(submission)
-
     errors = MattermostUsernamesService.validate_usernames(submission)
+
     if errors.any?
       log_validation_errors(errors, user)
       render json: { errors: }
@@ -45,15 +41,24 @@ class RegisterToMattermostController < ApplicationController
 
   private
 
-  def log_validation_errors(errors, user)
-    error_messages = errors.map { |field, message| "#{field}: #{message}" }.join(", ")
-    Rails.logger.error "登録失敗👀 Mattermost ID: #{user.mattermost_id}. Validation Errors: #{error_messages}"
+  def verify_mattermost_token
+    render json: { text: 'Unauthorized: TOKENによるエラー' }, status: :unauthorized unless params[:token] == ENV['MATTERMOST_BOT_TOKEN']
   end
 
-  def verify_mattermost_token
-    return if params[:token] == ENV['MATTERMOST_BOT_TOKEN']
+  def update_user_usernames(user, submission)
+    previous_qiita_username = user.qiita_username
+    previous_zenn_username = user.zenn_username
 
-    render json: { text: 'Unauthorized: TOKENによるエラー' }, status: :unauthorized
+    user.qiita_username = submission['qiita_username'].presence
+    user.zenn_username = submission['zenn_username'].presence
+    user.x_username = submission['x_username'].presence
+
+    update_articles_activity(user, previous_qiita_username, previous_zenn_username)
+  end
+
+  def update_articles_activity(user, previous_qiita_username, previous_zenn_username)
+    Article.where(user_id: user.id, source_platform: 'qiita').update_all(is_active: user.qiita_username.present?) if user.qiita_username != previous_qiita_username
+    Article.where(user_id: user.id, source_platform: 'zenn').update_all(is_active: user.zenn_username.present?) if user.zenn_username != previous_zenn_username
   end
 
   def log_mattermost_response(response)
@@ -61,18 +66,19 @@ class RegisterToMattermostController < ApplicationController
     Rails.logger.debug "Mattermost response body: #{response.body}"
   end
 
-  def update_user_usernames(user, submission)
-    user.qiita_username = submission['qiita_username'].presence
-    user.zenn_username = submission['zenn_username'].presence
-    user.x_username = submission['x_username'].presence
+  def log_validation_errors(errors, user)
+    error_messages = errors.map { |field, message| "#{field}: #{message}" }.join(", ")
+    Rails.logger.error "登録失敗👀 Mattermost ID: #{user.mattermost_id}. Validation Errors: #{error_messages}"
   end
 
   def log_success_message(user)
-    message = "登録成功！\n" \
-              "Mattermost ID: #{user.mattermost_id}\n" \
-              "Qiitaユーザー名: #{user.qiita_username || '(削除されました)'}\n" \
-              "Zennユーザー名: #{user.zenn_username || '(削除されました)'}\n" \
-              "Xユーザー名: #{user.x_username || '(削除されました)'}"
+    message = <<~MSG
+      登録成功！
+      Mattermost ID: #{user.mattermost_id}
+      Qiitaユーザー名: #{user.qiita_username || '(削除されました)'}
+      Zennユーザー名: #{user.zenn_username || '(削除されました)'}
+      Xユーザー名: #{user.x_username || '(削除されました)'}
+    MSG
     Rails.logger.info message
   end
 
