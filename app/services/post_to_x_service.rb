@@ -7,6 +7,8 @@ class PostToXService
 
   def initialize
     @article = Article.random_postable_article
+    raise 'No postable articles found' unless @article
+
     @post = @article.posts.create!(status: :pending)
   end
 
@@ -20,7 +22,6 @@ class PostToXService
     handle_response(post_response)
   rescue StandardError => e
     handle_error(e)
-    nil
   end
 
   private
@@ -52,7 +53,6 @@ class PostToXService
     else
       @post.update!(status: :failed)
     end
-    post_response["data"]
   end
 
   def handle_error(exception)

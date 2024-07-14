@@ -55,4 +55,40 @@ RSpec.describe Article, type: :model do
       expect(article.user).to eq(user)
     end
   end
+
+  describe '.random_postable_article' do
+    it 'returns a postable article' do
+      create(:article, user:, is_postable: true, is_active: true)
+      create(:article, user:, is_postable: false, is_active: true)
+      create(:article, user:, is_postable: true, is_active: false)
+
+      postable_article = Article.random_postable_article
+      expect(postable_article.is_postable).to be_truthy
+      expect(postable_article.is_active).to be_truthy
+    end
+  end
+
+  describe '#update_postable_status' do
+    it 'updates the is_postable status based on likes_count and published_at' do
+      article.update(published_at: 6.months.ago, likes_count: 31, source_platform: 'qiita')
+      article.update_postable_status
+      expect(article.is_postable).to be_truthy
+
+      article.update(likes_count: 10)
+      article.update_postable_status
+      expect(article.is_postable).to be_falsey
+    end
+  end
+
+  describe '#source_platform_hashtag' do
+    it 'returns the correct hashtag for Qiita' do
+      article.source_platform = 'qiita'
+      expect(article.source_platform_hashtag).to eq('#Qiita')
+    end
+
+    it 'returns the correct hashtag for Zenn' do
+      article.source_platform = 'zenn'
+      expect(article.source_platform_hashtag).to eq('#Zenn')
+    end
+  end
 end

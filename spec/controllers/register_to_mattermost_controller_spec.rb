@@ -1,9 +1,44 @@
 require 'rails_helper'
+require 'webmock/rspec'
+
+class TestLogger
+  attr_accessor :logs
+
+  def initialize
+    @logs = { info: [], error: [], debug: [] }
+  end
+
+  def info(message)
+    @logs[:info] << message
+  end
+
+  def error(message)
+    @logs[:error] << message
+  end
+
+  def debug(message)
+    @logs[:debug] << message
+  end
+end
 
 RSpec.describe RegisterToMattermostController, type: :controller do
   let(:user) { create(:user, mattermost_id: 'test_user_id') }
   let(:valid_token) { ENV.fetch('MATTERMOST_BOT_TOKEN', nil) }
   let(:invalid_token) { 'invalid_token' }
+  let(:test_logger) { TestLogger.new }
+
+  before do
+    stub_request(:get, %r{https://qiita.com/api/v2/users/valid_qiita})
+      .to_return(status: 200, body: '', headers: {})
+    stub_request(:get, %r{https://qiita.com/api/v2/users/invalid_qiita})
+      .to_return(status: 404, body: '', headers: {})
+    stub_request(:get, %r{https://zenn.dev/api/users/valid_zenn})
+      .to_return(status: 200, body: '', headers: {})
+    stub_request(:get, %r{https://zenn.dev/api/users/invalid_zenn})
+      .to_return(status: 404, body: '', headers: {})
+
+    allow(Rails).to receive(:logger).and_return(test_logger)
+  end
 
   describe 'POST #open_dialog' do
     context 'with valid token' do
@@ -19,6 +54,12 @@ RSpec.describe RegisterToMattermostController, type: :controller do
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['text']).to eq("【らんてくん おすすめ記事】登録フォームを開きました")
       end
+
+      it 'logs the Mattermost response' do
+        post :open_dialog, params: { user_id: user.mattermost_id, trigger_id: 'test_trigger', token: valid_token }
+        expect(test_logger.logs[:debug]).to include("Mattermost response status: 200")
+        expect(test_logger.logs[:debug]).to include("Mattermost response body: response body")
+      end
     end
 
     context 'with invalid token' do
@@ -31,14 +72,17 @@ RSpec.describe RegisterToMattermostController, type: :controller do
   end
 
   describe 'POST #submit_dialog' do
-    let(:valid_submission) { { 'qiita_username' => 'valid_qiita', 'zenn_username' => 'valid_zenn', 'x_username' => 'valid_x' } }
-    let(:invalid_submission) { { 'qiita_username' => 'invalid_qiita', 'zenn_username' => 'invalid_zenn' } }
+    let(:valid_submission) { ActionController::Parameters.new({ 'qiita_username' => 'valid_qiita', 'zenn_username' => 'valid_zenn', 'x_username' => 'valid_x' }).permit! }
+    let(:invalid_submission) { ActionController::Parameters.new({ 'qiita_username' => 'invalid_qiita', 'zenn_username' => 'invalid_zenn' }).permit! }
 
     before do
-      allow(MattermostUsernamesService).to receive(:qiita_username_exists?).with('valid_qiita').and_return(true)
-      allow(MattermostUsernamesService).to receive(:zenn_username_exists?).with('valid_zenn').and_return(true)
-      allow(MattermostUsernamesService).to receive(:qiita_username_exists?).with('invalid_qiita').and_return(false)
-      allow(MattermostUsernamesService).to receive(:zenn_username_exists?).with('invalid_zenn').and_return(false)
+      allow(MattermostUsernamesService).to receive(:sanitize_usernames).and_return(valid_submission)
+      allow(MattermostUsernamesService).to receive(:validate_usernames).with(instance_of(ActionController::Parameters)).and_call_original
+      allow(MattermostUsernamesService).to receive(:validate_usernames).with(valid_submission).and_return({})
+      allow(MattermostUsernamesService).to receive(:validate_usernames).with(invalid_submission).and_return({
+                                                                                                              'qiita_username' => '一致するユーザー名が見つかりません',
+                                                                                                              'zenn_username' => '一致するユーザー名が見つかりません'
+                                                                                                            })
     end
 
     context 'when submission is cancelled' do
@@ -59,6 +103,11 @@ RSpec.describe RegisterToMattermostController, type: :controller do
         expect(user.zenn_username).to eq('valid_zenn')
         expect(user.x_username).to eq('valid_x')
       end
+
+      it 'logs a success message' do
+        post :submit_dialog, params: { user_id: user.mattermost_id, submission: valid_submission }
+        expect(test_logger.logs[:info]).to include(/登録成功！/)
+      end
     end
 
     context 'with invalid submission' do
@@ -68,6 +117,11 @@ RSpec.describe RegisterToMattermostController, type: :controller do
         errors = JSON.parse(response.body)['errors']
         expect(errors['qiita_username']).to eq('一致するユーザー名が見つかりません')
         expect(errors['zenn_username']).to eq('一致するユーザー名が見つかりません')
+      end
+
+      it 'logs validation errors' do
+        post :submit_dialog, params: { user_id: user.mattermost_id, submission: invalid_submission }
+        expect(test_logger.logs[:error]).to include(/登録失敗👀 Mattermost ID: test_user_id. Validation Errors: qiita_username: 一致するユーザー名が見つかりません, zenn_username: 一致するユーザー名が見つかりません/)
       end
     end
   end
