@@ -1,5 +1,6 @@
 fetch_articles:
-  cron: "0 20 * * 4"  # UTC 20時 木曜日(4) = JST 5時 金曜日
+#  cron: "0 20 * * 4"  # UTC 20時 木曜日(4) = JST 5時 金曜日
+  cron: "0 20 * * *"  # 本番環境テスト運用期間後 修正
   class: "FetchArticlesJob"
   queue: default
 
