@@ -74,7 +74,7 @@ RSpec.describe Article, type: :model do
       article.update_postable_status
       expect(article.is_postable).to be_truthy
 
-      article.update(likes_count: 10)
+      article.update(likes_count: 5)
       article.update_postable_status
       expect(article.is_postable).to be_falsey
     end
