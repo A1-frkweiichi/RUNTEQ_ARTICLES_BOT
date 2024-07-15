@@ -47,6 +47,8 @@ Layout/SpaceInsideArrayLiteralBrackets:
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
 Metrics/AbcSize:
   Max: 21
+  Exclude:
+    - 'lib/user_debug_helper.rb'
 
 Metrics/BlockLength:
   Max: 100

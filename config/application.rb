@@ -33,5 +33,9 @@ module RunteqArticlesBot
     config.middleware.use ActionDispatch::Session::CookieStore, key: '_runteq_articles_bot_session'
     config.middleware.use Bugsnag::Rack
     config.exceptions_app = routes
+
+    config.active_record.encryption.primary_key = ENV.fetch('ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY', nil)
+    config.active_record.encryption.deterministic_key = ENV.fetch('ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY', nil)
+    config.active_record.encryption.key_derivation_salt = ENV.fetch('ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT', nil)
   end
 end
