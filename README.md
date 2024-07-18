@@ -44,7 +44,7 @@
      - ruby 3.3.3
      - rails 7.1.3
      - Sidekiq
-     - Bugsnag
+     - BugSnag
 2. Heroku
      - Dyno
      - PostgreSQL
