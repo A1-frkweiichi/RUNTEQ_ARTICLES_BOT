@@ -1,5 +1,5 @@
 # サービス名: [らんてくん おすすめ記事](https://x.com/runtekn_rec_art)
-### RUNTEQ現役・卒業生〜講師陣の高評価記事をお知らせします。(毎日19時 & 土日祝12時)
+### RUNTEQ現役・卒業生〜講師陣の高評価記事を、Xでお知らせします。(毎日19時 & 土日祝12時)
  ![bot](https://github.com/user-attachments/assets/4972e51c-8cdd-45e9-ba44-c0af41e3e5fd)
 
 # なぜこのサービスを作りたいのか？
