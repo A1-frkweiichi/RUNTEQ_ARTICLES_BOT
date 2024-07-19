@@ -3,8 +3,8 @@ class Article < ApplicationRecord
   has_many :posts
 
   REQUIRED_LIKES = {
-    'qiita' => 10, # 本番環境テスト運用期間後 修正: 30
-    'zenn' => 5 # 本番環境テスト運用期間後 修正: 20
+    'qiita' => 30,
+    'zenn' => 20
   }.freeze
 
   validates :user_id, presence: true

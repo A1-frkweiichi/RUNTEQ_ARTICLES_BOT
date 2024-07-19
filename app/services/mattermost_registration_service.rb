@@ -9,8 +9,8 @@ class MattermostRegistrationService
         introduction_text: "RUNTEQ現役・卒業生〜講師陣の高評価記事をお知らせする[X(旧: Twitter)bot](https://x.com/runtekn_rec_art)です。",
         elements: [
           build_username_element("Qiita", user&.qiita_username, nil),
-          build_username_element("Zenn", user&.zenn_username, "Qiita もしくは Zennを登録すると記事が紹介対象になります。"),
-          build_username_element("X", user&.x_username, "Xを登録すると記事紹介時にメンションされます。")
+          build_username_element("Zenn", user&.zenn_username, "登録すると記事が紹介対象になります（対象から外したい場合、空で更新ください）。"),
+          build_username_element("X", user&.x_username, "記事紹介時にメンションされます。")
         ],
         submit_label: "登録",
         notify_on_cancel: true
