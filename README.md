@@ -56,3 +56,8 @@
 
 # ER図
 <img width="2244" alt="ER図" src="https://github.com/user-attachments/assets/fd2c59d2-e6a7-48fe-affd-07b4729356fa">
+
+# 登録方法
+1. Mattermost に /runtekun と入力します。
+2. 登録フォームを選択して送信します。
+![register](https://github.com/user-attachments/assets/7b02baa5-793c-4c99-a14a-50a25d9ba680)
