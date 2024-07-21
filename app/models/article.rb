@@ -3,8 +3,8 @@ class Article < ApplicationRecord
   has_many :posts
 
   REQUIRED_LIKES = {
-    'qiita' => 30,
-    'zenn' => 20
+    'qiita' => 20,
+    'zenn' => 10
   }.freeze
 
   validates :user_id, presence: true
