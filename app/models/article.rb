@@ -3,7 +3,7 @@ class Article < ApplicationRecord
   has_many :posts
 
   REQUIRED_LIKES = {
-    'qiita' => 20,
+    'qiita' => 15,
     'zenn' => 10
   }.freeze
 
