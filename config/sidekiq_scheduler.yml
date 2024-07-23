@@ -1,11 +1,10 @@
 fetch_articles:
-#  cron: "0 20 * * 4"  # UTC 20時 木曜日(4) = JST 5時 金曜日
-  cron: "0 20 * * *"  # 本番環境テスト運用期間後 修正
+  cron: "0 20 * * 0,4"  # UTC 20時 日曜日(0) 木曜日(4) = JST 5時 月曜日 金曜日
   class: "FetchArticlesJob"
   queue: default
 
 post_to_x_daily_19:
-  cron: "0 10 * * *"  # UTC 10時 = JST 19時
+  cron: "0 10 * * 1,3"  # UTC 10時 月曜日(1) 水曜日(3) = JST 19時
   class: "PostToXJob"
   queue: default
 
