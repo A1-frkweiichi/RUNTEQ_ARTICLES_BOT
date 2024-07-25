@@ -34,3 +34,5 @@
 
 /.idea
 /dump.rdb
+
+config/GCP_service_account_key.json
