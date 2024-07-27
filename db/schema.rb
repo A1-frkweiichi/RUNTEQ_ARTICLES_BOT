@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_14_142954) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_27_120935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -31,7 +31,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_14_142954) do
     t.boolean "is_postable", default: false
     t.integer "post_count", default: 0, null: false
     t.boolean "is_active", default: true, null: false
-    t.index ["external_id"], name: "index_articles_on_external_id", unique: true
+    t.index %w[external_id source_platform], name: "index_articles_on_external_id_and_source_platform", unique: true
+    t.index %w[user_id is_postable is_active published_at likes_count], name: "index_articles_on_user_postable_active_published_likes"
     t.index ["user_id"], name: "index_articles_on_user_id"
   end
 
@@ -40,7 +41,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_14_142954) do
     t.enum "status", default: "pending", null: false, enum_type: "post_status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["article_id"], name: "index_posts_on_article_id"
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -51,6 +54,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_14_142954) do
     t.datetime "updated_at", null: false
     t.string "x_username"
     t.index ["mattermost_id"], name: "index_users_on_mattermost_id", unique: true
+    t.index %w[qiita_username zenn_username], name: "index_users_on_qiita_and_zenn_usernames"
     t.index ["qiita_username"], name: "index_users_on_qiita_username"
     t.index ["x_username"], name: "index_users_on_x_username"
     t.index ["zenn_username"], name: "index_users_on_zenn_username"
@@ -58,4 +62,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_14_142954) do
 
   add_foreign_key "articles", "users"
   add_foreign_key "posts", "articles"
+  add_foreign_key "posts", "users"
 end

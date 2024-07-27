@@ -3,17 +3,17 @@ fetch_articles:
   class: "FetchArticlesJob"
   queue: default
 
-post_to_x_daily_19:
+post_daily_19:
   cron: "0 10 * * 1,3"  # UTC 10時 月曜日(1) 水曜日(3) = JST 19時
-  class: "PostToXJob"
+  class: "PostJob"
   queue: default
 
-post_to_x_weekend_12:
+post_weekend_12:
   cron: "0 3 * * 6,0"  # UTC 3時 土曜日(6) 日曜日(0) = JST 12時
-  class: "PostToXJob"
+  class: "PostJob"
   queue: default
 
-post_to_x_holiday_12:
+post_holiday_12:
   cron: "0 3 * * *"  # UTC 3時 = JST 12時
-  class: "PostToXHolidayJob"
+  class: "PostHolidayJob"
   queue: default

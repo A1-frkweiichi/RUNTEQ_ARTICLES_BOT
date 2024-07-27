@@ -5,11 +5,13 @@ require 'bugsnag'
 class PostToXService
   TEMPLATE_PATH = Rails.root.join('x_bot_message.txt')
 
+  attr_reader :post, :article
+
   def initialize
     @article = Article.random_postable_article
     raise 'No postable articles found' unless @article
 
-    @post = @article.posts.create!(status: :pending)
+    @post = @article.posts.create!(status: :pending, user: @article.user)
   end
 
   def call
