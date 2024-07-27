@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :articles
+  has_many :posts
 
   validates :mattermost_id, presence: true, uniqueness: true
   validates :qiita_username, allow_blank: true, uniqueness: true

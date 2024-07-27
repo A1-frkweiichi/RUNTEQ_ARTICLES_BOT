@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PostToXService, type: :service do
-  let(:article) { create(:article, is_postable: true) }
+  let(:user) { create(:user) }
+  let(:article) { create(:article, is_postable: true, user:) }
   let(:x_client) { instance_double(X::Client) }
   let(:post_response) { { "data" => { "id" => "12345" } } }
   let(:service) { described_class.new }
@@ -34,6 +35,7 @@ RSpec.describe PostToXService, type: :service do
       it 'posts to X and updates the post status to success' do
         service.call
         expect(Post.last.status).to eq('success')
+        expect(Post.last.user).to eq(user)
       end
 
       it 'increments the post_count of the article' do
