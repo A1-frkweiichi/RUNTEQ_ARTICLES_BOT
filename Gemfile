@@ -33,6 +33,8 @@ gem "bootsnap", require: false
 # gem "rack-cors"
 
 gem "bugsnag"
+gem "google-api-client"
+gem "google-apis-gmail_v1"
 gem "google-apis-sheets_v4"
 gem "googleauth"
 gem "holiday_jp"

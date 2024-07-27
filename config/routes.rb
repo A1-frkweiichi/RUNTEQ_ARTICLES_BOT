@@ -6,5 +6,6 @@ Rails.application.routes.draw do
   post "/register_to_mattermost/open_dialog", to: "register_to_mattermost#open_dialog"
   post "/register_to_mattermost/submit_dialog", to: "register_to_mattermost#submit_dialog"
   post "/post_to_x", to: "post_to_x#create"
+  get "/gmail_oauth2callback", to: "gmail_oauth#callback"
   get "/up" => "rails/health#show", as: :rails_health_check
 end

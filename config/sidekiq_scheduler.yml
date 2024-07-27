@@ -17,3 +17,8 @@ post_holiday_12:
   cron: "0 3 * * *"  # UTC 3時 = JST 12時
   class: "PostHolidayJob"
   queue: default
+
+send_gmail:
+  cron: "0 22 * * 5"  # UTC 22時 金曜日(5) = JST 7時 土曜日
+  class: "SendGmailJob"
+  queue: default
