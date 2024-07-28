@@ -2,9 +2,21 @@ require 'sidekiq/web'
 require 'sidekiq-scheduler/web'
 
 Rails.application.routes.draw do
+  # Sidekiq Web UI
   mount Sidekiq::Web => '/sidekiq'
-  post "/register_to_mattermost/open_dialog", to: "register_to_mattermost#open_dialog"
-  post "/register_to_mattermost/submit_dialog", to: "register_to_mattermost#submit_dialog"
-  post "/post_to_x", to: "post_to_x#create"
-  get "/up" => "rails/health#show", as: :rails_health_check
+
+  # Health check
+  get '/up', to: 'rails/health#show', as: :rails_health_check
+
+  # Mattermost registration
+  namespace :register_to_mattermost do
+    post 'open_dialog'
+    post 'submit_dialog'
+  end
+
+  # X (Twitter) posting
+  post '/post_to_x', to: 'post_to_x#create'
+
+  # Gmail OAuth
+  get '/gmail_oauth2callback', to: 'gmail_oauth#callback'
 end
