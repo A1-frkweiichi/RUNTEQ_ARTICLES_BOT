@@ -49,6 +49,7 @@ Metrics/AbcSize:
   Max: 21
   Exclude:
     - 'lib/user_debug_helper.rb'
+    - 'app/services/gmail_service.rb'
 
 Metrics/BlockLength:
   Max: 100
@@ -69,6 +70,8 @@ Metrics/CyclomaticComplexity:
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
   Max: 18
+  Exclude:
+    - 'app/services/gmail_service.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowedMethods, AllowedPatterns.

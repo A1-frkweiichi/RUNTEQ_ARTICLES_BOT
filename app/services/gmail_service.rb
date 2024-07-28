@@ -24,13 +24,26 @@ class GmailService
   def authorize
     client_id = Google::Auth::ClientId.from_hash(credentials_hash)
     token_store = if Rails.env.production?
-                    Google::Auth::Stores::FileTokenStore.new(file: StringIO.new(ENV.fetch('GMAIL_TOKEN', nil)))
+                    Google::Auth::Stores::MemoryTokenStore.new
                   else
                     Google::Auth::Stores::FileTokenStore.new(file: Rails.root.join('config', 'token.yaml').to_s)
                   end
     authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, token_store)
     user_id = 'default'
-    credentials = authorizer.get_credentials(user_id)
+
+    if Rails.env.production?
+      token_data = JSON.parse(ENV['GMAIL_TOKEN'] || '{}')
+      credentials = Google::Auth::UserRefreshCredentials.new(
+        client_id: client_id.id,
+        client_secret: client_id.secret,
+        scope: SCOPE,
+        access_token: token_data['access_token'],
+        refresh_token: token_data['refresh_token'],
+        expiration_time_millis: token_data['expiration_time_millis']
+      )
+    else
+      credentials = authorizer.get_credentials(user_id)
+    end
 
     if credentials.nil?
       url = authorizer.get_authorization_url(base_url: 'http://localhost:3000/gmail_oauth2callback')
