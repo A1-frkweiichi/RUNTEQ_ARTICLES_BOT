@@ -36,3 +36,5 @@
 /dump.rdb
 
 config/GCP_service_account_key.json
+config/Gmail_client_secret.json
+config/token.yaml
