@@ -26,7 +26,7 @@ class GmailService
   def authorize
     client_id = Google::Auth::ClientId.from_hash(credentials_hash)
     token_store = if Rails.env.production?
-                    Google::Auth::Stores::MemoryTokenStore.new
+                    Google::Auth::Stores::FileTokenStore.new(file: StringIO.new(ENV.fetch('GMAIL_TOKEN', nil)))
                   else
                     Google::Auth::Stores::FileTokenStore.new(file: Rails.root.join('config', 'token.yaml').to_s)
                   end
