@@ -1,6 +1,6 @@
 require 'googleauth'
 
-class GmailOauthController < ApplicationController
+class OauthController < ApplicationController
   def callback
     client_id = Google::Auth::ClientId.from_file(Rails.root.join('config', 'Gmail_client_secret.json'))
     token_store = Google::Auth::Stores::FileTokenStore.new(file: Rails.root.join('config', 'token.yaml'))

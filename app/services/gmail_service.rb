@@ -23,35 +23,79 @@ class GmailService
 
   def authorize
     client_id = Google::Auth::ClientId.from_hash(credentials_hash)
-    token_store = if Rails.env.production?
-                    Google::Auth::Stores::MemoryTokenStore.new
-                  else
-                    Google::Auth::Stores::FileTokenStore.new(file: Rails.root.join('config', 'token.yaml').to_s)
-                  end
-    authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, token_store)
+    token_hash = Rails.env.production? ? production_token_hash : file_token_hash
+
+    puts "Credentials Hash: #{credentials_hash}"
+    puts "Token Hash: #{token_hash}"
+
+    credentials = Google::Auth::UserRefreshCredentials.new(
+      client_id: client_id.id,
+      client_secret: client_id.secret,
+      scope: SCOPE,
+      access_token: token_hash['access_token'],
+      refresh_token: token_hash['refresh_token'],
+      expiration_time_millis: token_hash['expiration_time_millis']
+    )
+
+    if credentials.access_token.nil? || credentials.refresh_token.nil?
+      puts "Access token or refresh token is missing. Initiating new authorization flow."
+      credentials = get_new_credentials(client_id)
+    elsif credentials.expired?
+      puts "Credentials expired. Refreshing..."
+      credentials.refresh!
+      save_refreshed_token(credentials)
+    end
+
+    puts "Final Credentials: #{credentials.inspect}"
+    credentials
+  end
+
+  def get_new_credentials(client_id)
+    authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, nil)
     user_id = 'default'
 
-    if Rails.env.production?
-      token_data = JSON.parse(ENV['GMAIL_TOKEN'] || '{}')
-      credentials = Google::Auth::UserRefreshCredentials.new(
-        client_id: client_id.id,
-        client_secret: client_id.secret,
-        scope: SCOPE,
-        access_token: token_data['access_token'],
-        refresh_token: token_data['refresh_token'],
-        expiration_time_millis: token_data['expiration_time_millis']
-      )
-    else
-      credentials = authorizer.get_credentials(user_id)
-    end
+    url = authorizer.get_authorization_url(base_url: 'http://localhost:3000/oauth2callback')
+    puts "Open this URL in your browser and authorize the application:"
+    puts url
+    puts "Enter the authorization code:"
+    code = gets.chomp
 
-    if credentials.nil?
-      url = authorizer.get_authorization_url(base_url: 'http://localhost:3000/gmail_oauth2callback')
-      puts "Open the following URL in your browser and authorize the application:\n#{url}"
-      puts "After authorization, come back and run this script again."
-      exit
-    end
+    credentials = authorizer.get_and_store_credentials_from_code(
+      user_id:, code:, base_url: 'http://localhost:3000/oauth2callback'
+    )
+
+    save_refreshed_token(credentials)
     credentials
+  end
+
+  def save_refreshed_token(credentials)
+    refreshed_token = {
+      'access_token' => credentials.access_token,
+      'refresh_token' => credentials.refresh_token,
+      'expiration_time_millis' => credentials.expires_at.to_i * 1000
+    }
+
+    if Rails.env.production?
+      ENV['GMAIL_TOKEN'] = refreshed_token.to_json
+    else
+      File.write(Rails.root.join('config', 'token.yaml'), refreshed_token.to_yaml)
+    end
+  end
+
+  def credentials_hash
+    @credentials_hash ||= if Rails.env.production?
+                            JSON.parse(ENV['GMAIL_CREDENTIALS'] || '{}')
+                          else
+                            JSON.parse(File.read(Rails.root.join('config', 'Gmail_client_secret.json')))
+                          end
+  end
+
+  def production_token_hash
+    @production_token_hash ||= JSON.parse(ENV['GMAIL_TOKEN'] || '{}')
+  end
+
+  def file_token_hash
+    @file_token_hash ||= YAML.load_file(Rails.root.join('config', 'token.yaml'))
   end
 
   def create_message(to, subject, body)
@@ -61,13 +105,5 @@ class GmailService
       body body
     end
     message.to_s
-  end
-
-  def credentials_hash
-    if Rails.env.production?
-      JSON.parse(ENV.fetch('GMAIL_CREDENTIALS', nil))
-    else
-      JSON.parse(File.read(Rails.root.join('config', 'Gmail_client_secret.json')))
-    end
   end
 end

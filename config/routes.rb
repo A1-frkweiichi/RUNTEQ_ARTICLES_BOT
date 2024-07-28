@@ -18,5 +18,5 @@ Rails.application.routes.draw do
   post '/post_to_x', to: 'post_to_x#create'
 
   # Gmail OAuth
-  get '/gmail_oauth2callback', to: 'gmail_oauth#callback'
+  get '/oauth2callback', to: 'oauth#callback'
 end
