@@ -1,10 +1,14 @@
 class SendGmailJob < ApplicationJob
   queue_as :default
+  sidekiq_options retry: 5, backtrace: true
 
   def perform
     gmail_service = GmailService.new
     body = generate_email_body
     gmail_service.send_email('qiita.from.runteq@gmail.com', '登録状況推移', body)
+  rescue StandardError => e
+    Bugsnag.notify(e)
+    raise e
   end
 
   private
