@@ -4,8 +4,6 @@ require 'googleauth/stores/file_token_store'
 
 class GmailService
   APPLICATION_NAME = 'runtekun-recommends-articles'.freeze
-  CREDENTIALS_PATH = Rails.root.join('config', 'Gmail_client_secret.json').to_s
-  TOKEN_PATH = Rails.root.join('config', 'token.yaml').to_s
   SCOPE = Google::Apis::GmailV1::AUTH_GMAIL_SEND
 
   def initialize
@@ -24,8 +22,12 @@ class GmailService
   private
 
   def authorize
-    client_id = Google::Auth::ClientId.from_file(CREDENTIALS_PATH)
-    token_store = Google::Auth::Stores::FileTokenStore.new(file: TOKEN_PATH)
+    client_id = Google::Auth::ClientId.from_hash(credentials_hash)
+    token_store = if Rails.env.production?
+                    Google::Auth::Stores::FileTokenStore.new(file: StringIO.new(ENV.fetch('GMAIL_TOKEN', nil)))
+                  else
+                    Google::Auth::Stores::FileTokenStore.new(file: Rails.root.join('config', 'token.yaml').to_s)
+                  end
     authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, token_store)
     user_id = 'default'
     credentials = authorizer.get_credentials(user_id)
@@ -46,5 +48,13 @@ class GmailService
       body body
     end
     message.to_s
+  end
+
+  def credentials_hash
+    if Rails.env.production?
+      JSON.parse(ENV.fetch('GMAIL_CREDENTIALS', nil))
+    else
+      JSON.parse(File.read(Rails.root.join('config', 'Gmail_client_secret.json')))
+    end
   end
 end
