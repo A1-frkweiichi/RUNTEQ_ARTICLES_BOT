@@ -1,6 +1,6 @@
 class SendGmailJob < ApplicationJob
   queue_as :default
-  # sidekiq_options retry: 5, backtrace: true
+  sidekiq_options retry: 5, backtrace: true
 
   def perform
     gmail_service = GmailService.new
