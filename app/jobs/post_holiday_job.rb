@@ -11,7 +11,7 @@ class PostHolidayJob < ApplicationJob
     post_to_x_service = PostToXService.new
     post_to_x_service.call
 
-    record_in_sheets(post_to_x_service.post, post_to_x_service.article)
+    # record_in_sheets(post_to_x_service.post, post_to_x_service.article)
   rescue StandardError => e
     Bugsnag.notify(e)
     raise e

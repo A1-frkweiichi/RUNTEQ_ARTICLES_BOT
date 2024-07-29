@@ -1,3 +1,4 @@
+（テスト投稿）
 <%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>) のおすすめ記事だぞ！
 
 『<%= @article.title %>』

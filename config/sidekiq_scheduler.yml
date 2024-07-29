@@ -4,21 +4,21 @@ fetch_articles:
   queue: default
 
 post_daily_19:
-  cron: "0 10 * * 1,3"  # UTC 10時 月曜日(1) 水曜日(3) = JST 19時
+  cron: "0 10 * * *"  # UTC 10時 = JST 19時
   class: "PostJob"
   queue: default
 
-post_weekend_12:
-  cron: "0 3 * * 6,0"  # UTC 3時 土曜日(6) 日曜日(0) = JST 12時
-  class: "PostJob"
-  queue: default
+#post_weekend_12:
+#  cron: "0 3 * * 6,0"  # UTC 3時 土曜日(6) 日曜日(0) = JST 12時
+#  class: "PostJob"
+#  queue: default
 
-post_holiday_12:
-  cron: "0 3 * * *"  # UTC 3時 = JST 12時
-  class: "PostHolidayJob"
-  queue: default
+#post_holiday_12:
+#  cron: "0 3 * * *"  # UTC 3時 = JST 12時
+#  class: "PostHolidayJob"
+#  queue: default
 
-send_gmail:
-  cron: "0 22 * * 5"  # UTC 22時 金曜日(5) = JST 7時 土曜日
-  class: "SendGmailJob"
-  queue: default
+#send_gmail:
+#  cron: "0 22 * * 5"  # UTC 22時 金曜日(5) = JST 7時 土曜日
+#  class: "SendGmailJob"
+#  queue: default

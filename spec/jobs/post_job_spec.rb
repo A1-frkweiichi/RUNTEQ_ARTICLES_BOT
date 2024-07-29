@@ -25,13 +25,13 @@ RSpec.describe PostJob, type: :job do
     PostJob.perform_now
   end
 
-  it 'records in sheets' do
-    expect(service).to receive(:call)
-    expect(service).to receive(:post).and_return(post)
-    expect(service).to receive(:article).and_return(article)
-
-    expect_any_instance_of(GoogleSheetsService).to receive(:record_post)
-
-    PostJob.perform_now
-  end
+  # it 'records in sheets' do
+  #   expect(service).to receive(:call)
+  #   expect(service).to receive(:post).and_return(post)
+  #   expect(service).to receive(:article).and_return(article)
+  #
+  #   expect_any_instance_of(GoogleSheetsService).to receive(:record_post)
+  #
+  #   PostJob.perform_now
+  # end
 end

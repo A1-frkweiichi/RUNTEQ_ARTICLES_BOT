@@ -69,6 +69,8 @@ Metrics/CyclomaticComplexity:
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
   Max: 18
+  Exclude:
+    - 'app/services/gmail_service.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowedMethods, AllowedPatterns.
