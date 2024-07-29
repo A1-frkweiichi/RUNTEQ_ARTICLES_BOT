@@ -1,8 +1,10 @@
-（テスト投稿）
-<%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>) のおすすめ記事だぞ！
+ <% if @article.user.x_username.present? %>
+  <%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>)は @<%= @article.user.x_username %> さんのおすすめ記事だぞ！
+<% else %>
+  <%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>) のおすすめ記事だぞ！
+<% end %>
 
-『<%= @article.title %>』
+<%= @article.title %>
 <%= @article.article_url %>
 
-<%= "@" + @article.user.x_username if @article.user.x_username.present? %>
-#RUNTEQ <%= @article.source_platform_hashtag %> no.<%= @post.id %>
+#RUNTEQ <%= @article.source_platform_hashtag %>
