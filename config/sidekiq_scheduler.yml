@@ -1,34 +1,24 @@
-wake_up_0450:
-  cron: "50 19 * * 0,4"  # UTC 19:50 日(0),木(4) = JST 4:50 月, 金
-  class: "WakeUpJob"
-  queue: default
-
-fetch_articles_0500:
+fetch_articles:
   cron: "0 20 * * 0,4"  # UTC 20:00 日(0),木(4) = JST 5:00 月, 金
   class: "FetchArticlesJob"
   queue: default
 
-wake_up_1850:
-  cron: "50 9 * * *"  # UTC 9:50 = JST 18:50
-  class: "WakeUpJob"
-  queue: default
-
-post_daily_1900:
+post_daily:
   cron: "0 10 * * *"  # UTC 10:00 = JST 19:00
   class: "PostJob"
   queue: default
 
-#post_weekend_1200:
+#post_weekend:
 #  cron: "0 3 * * 6,0"  # UTC 3:00 土(6),日(0) = JST 12:00 土, 日
 #  class: "PostJob"
 #  queue: default
 
-#post_holiday_1200:
+#post_holiday:
 #  cron: "0 3 * * *"  # UTC 3:00 = JST 12:00
 #  class: "PostHolidayJob"
 #  queue: default
 
-#send_gmail_1855:
-#  cron: "55 9 * * 5"  # UTC 09:55 金(5) = JST 18:55 金
+#send_gmail:
+#  cron: "0 10 * * 5"  # UTC 10:00 金(5) = JST 19:00 金
 #  class: "SendGmailJob"
 #  queue: default
