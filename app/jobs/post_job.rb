@@ -1,4 +1,4 @@
-RecordPostParams = Struct.new(:post_id, :article_title, :article_url, :x_username, :hashtag, :created_at)
+require_relative '../models/concerns/record_post_params'
 
 class PostJob < ApplicationJob
   queue_as :default
