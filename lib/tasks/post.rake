@@ -1,11 +1,13 @@
+require 'custom_holiday'
+
 namespace :post do
   desc "$ rails post:execute  投稿タスク"
   task execute: :environment do
     jst_today = Time.current.in_time_zone('Asia/Tokyo').to_date
-    is_holiday = HolidayJp.holiday?(jst_today)
+    is_holiday = CustomHoliday.holiday?(jst_today) || HolidayJp.holiday?(jst_today)
 
     if is_holiday
-      PostHolidayJob.perform_now
+      PostNationalHolidayJob.perform_now
     elsif weekday_or_weekend?(jst_today)
       PostJob.perform_now
     else

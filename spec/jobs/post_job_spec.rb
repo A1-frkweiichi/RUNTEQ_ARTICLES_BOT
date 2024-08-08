@@ -1,4 +1,5 @@
 require 'rails_helper'
+require_relative '../../app/models/concerns/record_post_params'
 
 RSpec.describe PostJob, type: :job do
   let(:service) { instance_double(PostToXService) }

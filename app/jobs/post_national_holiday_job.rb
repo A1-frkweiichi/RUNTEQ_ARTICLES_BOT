@@ -1,12 +1,13 @@
-RecordPostParams = Struct.new(:post_id, :article_title, :article_url, :x_username, :hashtag, :created_at)
+require 'custom_holiday'
+require_relative '../models/concerns/record_post_params'
 
-class PostHolidayJob < ApplicationJob
+class PostNationalHolidayJob < ApplicationJob
   queue_as :default
   sidekiq_options retry: 5, backtrace: true
 
   def perform
-    return unless HolidayJp.holiday?(Date.today)
-    return if Date.today.saturday? || Date.today.sunday?
+    today = Date.today
+    return unless holiday_today?(today)
 
     post_to_x_service = PostToXService.new
     post_to_x_service.call
@@ -18,6 +19,10 @@ class PostHolidayJob < ApplicationJob
   end
 
   private
+
+  def holiday_today?(date)
+    (CustomHoliday.holiday?(date) || HolidayJp.holiday?(date)) && !date.saturday? && !date.sunday?
+  end
 
   def record_in_sheets(post, article)
     params = RecordPostParams.new(
