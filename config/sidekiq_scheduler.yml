@@ -5,17 +5,17 @@ fetch_articles:
 
 post_daily:
   cron: "0 10 * * *"  # UTC 10:00 = JST 19:00
-  class: "PostJob"
+  class: "PostToXJob"
   queue: default
 
 post_weekend:
   cron: "0 3 * * 6,0"  # UTC 3:00 土(6),日(0) = JST 12:00 土, 日
-  class: "PostJob"
+  class: "PostToXJob"
   queue: default
 
 post_national_holiday:
   cron: "0 3 * * *"  # UTC 3:00 = JST 12:00 祝日（土日を除く）
-  class: "PostNationalHolidayJob"
+  class: "PostToXJob"
   queue: default
 
 #send_gmail:
