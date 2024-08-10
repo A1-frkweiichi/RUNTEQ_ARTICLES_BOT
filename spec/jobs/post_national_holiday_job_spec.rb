@@ -6,51 +6,40 @@ require_relative '../../app/models/concerns/record_post_params'
 RSpec.describe PostNationalHolidayJob, type: :job do
   include ActiveSupport::Testing::TimeHelpers
 
-  let(:service) { instance_double(PostToXService) }
-  let(:post) { double('Post', id: 1, created_at: Time.now) }
-  let(:article) { double('Article', title: 'Test Title', article_url: 'http://test.com', user: double('User', x_username: 'test_user'), source_platform_hashtag: '#Test') }
-
   before do
-    allow(PostToXService).to receive(:new).and_return(service)
-    allow(service).to receive(:call)
-    allow(service).to receive(:post).and_return(post)
-    allow(service).to receive(:article).and_return(article)
-
     stub_request(:post, "https://www.googleapis.com/oauth2/v4/token")
       .to_return(status: 200, body: "", headers: {})
 
     stub_request(:post, %r{https://sheets.googleapis.com/v4/spreadsheets/.*/values/.*:append\?valueInputOption=RAW})
       .to_return(status: 200, body: "", headers: {})
-
-    allow_any_instance_of(GoogleSheetsService).to receive(:record_post).and_return(true)
   end
 
-  it 'calls PostToXService on holiday' do
+  it 'calls PostToXJob on holiday' do
     holiday_date = Date.new(2024, 7, 15)
     allow(HolidayJp).to receive(:holiday?).with(holiday_date).and_return(true)
 
     travel_to holiday_date do
-      expect(service).to receive(:call)
+      expect(PostToXJob).to receive(:perform_later)
       PostNationalHolidayJob.perform_now
     end
   end
 
-  it 'calls PostToXService on custom holiday' do
+  it 'calls PostToXJob on custom holiday' do
     custom_holiday_date = Date.new(2024, 8, 13)
 
     travel_to custom_holiday_date do
-      expect(service).to receive(:call)
+      expect(PostToXJob).to receive(:perform_later)
       PostNationalHolidayJob.perform_now
     end
   end
 
-  it 'does not call PostToXService on a non-holiday' do
+  it 'does not call PostToXJob on a non-holiday' do
     non_holiday_date = Date.new(2024, 8, 12)
     allow(HolidayJp).to receive(:holiday?).with(non_holiday_date).and_return(false)
     allow(CustomHoliday).to receive(:holiday?).with(non_holiday_date).and_return(false)
 
     travel_to non_holiday_date do
-      expect(service).not_to receive(:call)
+      expect(PostToXJob).not_to receive(:perform_later)
       PostNationalHolidayJob.perform_now
     end
   end

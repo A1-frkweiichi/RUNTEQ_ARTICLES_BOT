@@ -9,7 +9,7 @@ namespace :post do
     if is_holiday
       PostNationalHolidayJob.perform_now
     elsif weekday_or_weekend?(jst_today)
-      PostJob.perform_now
+      PostToXJob.perform_now
     else
       puts "例外処理"
     end

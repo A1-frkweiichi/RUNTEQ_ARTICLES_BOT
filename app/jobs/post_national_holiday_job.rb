@@ -1,5 +1,4 @@
 require 'custom_holiday'
-require_relative '../models/concerns/record_post_params'
 
 class PostNationalHolidayJob < ApplicationJob
   queue_as :default
@@ -9,10 +8,7 @@ class PostNationalHolidayJob < ApplicationJob
     today = Date.today
     return unless holiday_today?(today)
 
-    post_to_x_service = PostToXService.new
-    post_to_x_service.call
-
-    # record_in_sheets(post_to_x_service.post, post_to_x_service.article)
+    PostToXJob.perform_later
   rescue StandardError => e
     Bugsnag.notify(e)
     raise e
@@ -22,21 +18,5 @@ class PostNationalHolidayJob < ApplicationJob
 
   def holiday_today?(date)
     (CustomHoliday.holiday?(date) || HolidayJp.holiday?(date)) && !date.saturday? && !date.sunday?
-  end
-
-  def record_in_sheets(post, article)
-    params = RecordPostParams.new(
-      post.id,
-      article.title,
-      article.article_url,
-      article.user.x_username,
-      article.source_platform_hashtag,
-      post.created_at
-    )
-
-    GoogleSheetsService.new.record_post(params)
-  rescue StandardError => e
-    Bugsnag.notify(e)
-    raise e
   end
 end
