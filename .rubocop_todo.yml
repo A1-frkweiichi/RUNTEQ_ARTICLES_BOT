@@ -48,6 +48,8 @@ Layout/SpaceInsideArrayLiteralBrackets:
 Metrics/AbcSize:
   Max: 21
   Exclude:
+    - 'app/jobs/record_post_in_sheets_job.rb'
+    - 'app/services/google_sheets_service.rb'
     - 'lib/user_debug_helper.rb'
 
 Metrics/BlockLength:
@@ -68,7 +70,7 @@ Metrics/CyclomaticComplexity:
 # Offense count: 3
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
-  Max: 18
+  Max: 20
   Exclude:
     - 'app/services/gmail_service.rb'
 

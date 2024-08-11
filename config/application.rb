@@ -41,4 +41,13 @@ module RunteqArticlesBot
   end
 end
 
-ENV['GOOGLE_APPLICATION_CREDENTIALS'] ||= Rails.root.join('config', 'GCP_service_account_key.json').to_s
+if Rails.env.production?
+  credentials_content = ENV.fetch('GOOGLE_APPLICATION_CREDENTIALS', nil)
+  credentials_file = Rails.root.join('config', 'gcp_service_account_key.json')
+
+  File.write(credentials_file, credentials_content)
+
+  ENV['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_file.to_s
+else
+  ENV['GOOGLE_APPLICATION_CREDENTIALS'] ||= Rails.root.join('config', 'GCP_service_account_key.json').to_s
+end
