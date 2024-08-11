@@ -37,7 +37,7 @@ RSpec.describe PostToXJob, type: :job do
     allow(HolidayJp).to receive(:holiday?).with(holiday_date).and_return(true)
 
     travel_to holiday_date do
-      expect(RecordPostInSheetsJob).to receive(:perform_later).with(post, article)
+      expect(RecordPostInSheetsJob).to receive(:perform_later).with(post.id, article.id)
       PostToXJob.perform_now
     end
   end
@@ -68,7 +68,7 @@ RSpec.describe PostToXJob, type: :job do
     allow(HolidayJp).to receive(:holiday?).with(weekday_date).and_return(false)
 
     travel_to weekday_date do
-      expect(RecordPostInSheetsJob).to receive(:perform_later).with(post, article)
+      expect(RecordPostInSheetsJob).to receive(:perform_later).with(post.id, article.id)
       PostToXJob.perform_now
     end
   end

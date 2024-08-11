@@ -9,13 +9,27 @@ class GoogleSheetsService
     scope = Google::Apis::SheetsV4::AUTH_SPREADSHEETS
     @service = Google::Apis::SheetsV4::SheetsService.new
     @service.client_options.application_name = 'Rails Google Sheets'
-    @service.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
-      json_key_io: File.open(ENV.fetch('GOOGLE_APPLICATION_CREDENTIALS', nil)),
-      scope:
-    )
+
+    key_file = ENV.fetch('GOOGLE_APPLICATION_CREDENTIALS', nil)
+
+    raise "Google credentials file not found: #{key_file}" unless File.exist?(key_file)
+
+    key_file_content = File.read(key_file)
+    begin
+      json_key_io = StringIO.new(key_file_content)
+      @service.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
+        json_key_io:,
+        scope:
+      )
+    rescue JSON::ParserError => e
+      Rails.logger.error "Failed to parse Google credentials file: #{e.message}"
+      raise e
+    end
   end
 
   def record_post(params)
+    Rails.logger.info "Recording post to Google Sheets with params: #{params.inspect}"
+
     x_username_url = params.x_username.present? ? "https://x.com/#{params.x_username}" : ''
     cleaned_hashtag = params.hashtag.sub('#', '').capitalize
 
@@ -30,7 +44,14 @@ class GoogleSheetsService
       [params.post_id, params.article_title, params.article_url, x_username_url, cleaned_hashtag, full_date_time]
     ]
     value_range_object = Google::Apis::SheetsV4::ValueRange.new(values:)
-    @service.append_spreadsheet_value(SPREADSHEET_ID, RANGE, value_range_object, value_input_option: 'RAW')
+
+    begin
+      result = @service.append_spreadsheet_value(SPREADSHEET_ID, RANGE, value_range_object, value_input_option: 'RAW')
+      Rails.logger.info "Google Sheets API response: #{result.inspect}"
+    rescue Google::Apis::Error => e
+      Rails.logger.error "Google Sheets API error: #{e.message}"
+      raise e
+    end
   end
 
   private

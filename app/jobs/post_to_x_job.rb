@@ -26,6 +26,7 @@ class PostToXJob < ApplicationJob
 
     return unless post_to_x_service.post.present?
 
-    RecordPostInSheetsJob.perform_later(post_to_x_service.post, post_to_x_service.article)
+    Rails.logger.info "Enqueuing RecordPostInSheetsJob for Post ID: #{post_to_x_service.post.id}, Article ID: #{post_to_x_service.article.id}"
+    RecordPostInSheetsJob.perform_later(post_to_x_service.post.id, post_to_x_service.article.id)
   end
 end
