@@ -14,7 +14,7 @@ post_weekend:
   queue: default
 
 post_national_holiday:
-  cron: "0 3 * * *"  # UTC 3:00 = JST 12:00 祝日（土日を除く）
+  cron: "0 3 * * 1-5"  # UTC 3:00 月(1)~金(5) = JST 12:00 祝日(土日を除く)
   class: "PostToXJob"
   queue: default
 
