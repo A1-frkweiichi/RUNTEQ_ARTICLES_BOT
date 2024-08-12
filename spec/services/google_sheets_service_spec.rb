@@ -4,14 +4,14 @@ require 'google/apis/sheets_v4'
 
 RSpec.describe GoogleSheetsService, type: :service do
   let(:params) do
-    RecordPostParams.new(
-      1,
-      'Test Title',
-      'http://test.com',
-      'test_user',
-      '#Test',
-      Time.now
-    )
+    {
+      article_id: 1,
+      article_title: 'Test Title',
+      article_url: 'http://test.com',
+      x_username: 'test_user',
+      hashtag: '#Test',
+      created_at: Time.now
+    }
   end
 
   before do
