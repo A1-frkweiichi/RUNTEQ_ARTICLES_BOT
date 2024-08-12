@@ -1,5 +1,4 @@
 require 'date_helper'
-require_relative '../models/concerns/record_post_params'
 
 class PostToXJob < ApplicationJob
   queue_as :default
@@ -26,7 +25,13 @@ class PostToXJob < ApplicationJob
 
     return unless post_to_x_service.post.present?
 
-    Rails.logger.info "Enqueuing RecordPostInSheetsJob for Post ID: #{post_to_x_service.post.id}, Article ID: #{post_to_x_service.article.id}"
-    RecordPostInSheetsJob.perform_later(post_to_x_service.post.id, post_to_x_service.article.id)
+    post = post_to_x_service.post
+    post.update(status: :pending)
+
+    params = {
+      article_id: post_to_x_service.article.id
+    }
+    RecordPostInSheetsJob.perform_later(**params)
+    Rails.logger.info "Enqueuing RecordPostInSheetsJob with params: #{params.inspect}"
   end
 end
