@@ -1,15 +1,12 @@
 require 'rails_helper'
-require_relative '../../app/models/concerns/record_post_params'
 
 RSpec.describe RecordPostInSheetsJob, type: :job do
-  let(:post) { instance_double('Post', id: 1, created_at: Time.now) }
   let(:user) { instance_double('User', x_username: 'test_user') }
   let(:article) { instance_double('Article', id: 2, title: 'Test Title', article_url: 'http://test.com', user:, source_platform_hashtag: '#Test') }
-  let(:params) { RecordPostParams.new(post.id, article.title, article.article_url, article.user.x_username, article.source_platform_hashtag, post.created_at) }
+  let(:params) { { article_id: article.id } }
   let(:google_sheets_service) { instance_double(GoogleSheetsService) }
 
   before do
-    allow(Post).to receive(:find_by).with(id: post.id).and_return(post)
     allow(Article).to receive(:find_by).with(id: article.id).and_return(article)
     allow(GoogleSheetsService).to receive(:new).and_return(google_sheets_service)
     allow(google_sheets_service).to receive(:record_post).and_return(true)
@@ -22,7 +19,7 @@ RSpec.describe RecordPostInSheetsJob, type: :job do
   end
 
   it 'records post in sheets' do
-    expect(google_sheets_service).to receive(:record_post).with(params)
-    RecordPostInSheetsJob.perform_now(post.id, article.id)
+    expect(google_sheets_service).to receive(:record_post).with(hash_including(article_id: article.id))
+    RecordPostInSheetsJob.perform_now(params)
   end
 end

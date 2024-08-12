@@ -1,7 +1,6 @@
 require 'rails_helper'
 require 'date_helper'
 require 'active_support/testing/time_helpers'
-require_relative '../../app/models/concerns/record_post_params'
 
 RSpec.describe PostToXJob, type: :job do
   include ActiveSupport::Testing::TimeHelpers
@@ -37,7 +36,7 @@ RSpec.describe PostToXJob, type: :job do
     allow(HolidayJp).to receive(:holiday?).with(holiday_date).and_return(true)
 
     travel_to holiday_date do
-      expect(RecordPostInSheetsJob).to receive(:perform_later).with(post.id, article.id)
+      expect(RecordPostInSheetsJob).to receive(:perform_later).with(article_id: article.id)
       PostToXJob.perform_now
     end
   end
@@ -68,7 +67,7 @@ RSpec.describe PostToXJob, type: :job do
     allow(HolidayJp).to receive(:holiday?).with(weekday_date).and_return(false)
 
     travel_to weekday_date do
-      expect(RecordPostInSheetsJob).to receive(:perform_later).with(post.id, article.id)
+      expect(RecordPostInSheetsJob).to receive(:perform_later).with(article_id: article.id)
       PostToXJob.perform_now
     end
   end
