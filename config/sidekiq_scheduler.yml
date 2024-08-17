@@ -19,7 +19,7 @@ post_national_holiday:
   queue: default
 
 send_gmail:
-  cron: "*/10 * * * *"  # 本番環境 動作確認
+  # cron: "*/10 * * * *"  # 本番環境 動作確認
   # cron: "0 22 * * 5"  # UTC 22:00 金(5) = JST 7:00 土
   class: "SendGmailJob"
   queue: default
