@@ -1,10 +1,14 @@
 require 'googleauth'
 
 class OauthController < ApplicationController
+  CREDENTIALS_PATH = ENV.fetch('GMAIL_CREDENTIALS')
+  TOKEN_PATH = Rails.root.join('config', 'token.yaml').to_s
+  SCOPE = Google::Apis::GmailV1::AUTH_GMAIL_SEND
+
   def callback
-    client_id = Google::Auth::ClientId.from_file(Rails.root.join('config', 'Gmail_client_secret.json'))
-    token_store = Google::Auth::Stores::FileTokenStore.new(file: Rails.root.join('config', 'token.yaml'))
-    authorizer = Google::Auth::UserAuthorizer.new(client_id, Google::Apis::GmailV1::AUTH_GMAIL_SEND, token_store)
+    client_id = Google::Auth::ClientId.from_file(CREDENTIALS_PATH)
+    token_store = Google::Auth::Stores::FileTokenStore.new(file: TOKEN_PATH)
+    authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, token_store)
     user_id = 'default'
 
     authorizer.get_and_store_credentials_from_code(
