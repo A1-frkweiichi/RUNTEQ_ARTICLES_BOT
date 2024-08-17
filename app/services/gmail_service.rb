@@ -36,9 +36,8 @@ class GmailService
     user_id = 'default'
 
     credentials = if Rails.env.production?
-                    token_data = ENV['GMAIL_TOKEN'] ? JSON.parse(ENV['GMAIL_TOKEN']) : nil
-                    if token_data
-                      @logger.info("Using production token data.")
+                    if ENV['GMAIL_TOKEN'].present?
+                      token_data = JSON.parse(ENV['GMAIL_TOKEN'])
                       Google::Auth::UserRefreshCredentials.new(
                         client_id: client_id.id,
                         client_secret: client_id.secret,
