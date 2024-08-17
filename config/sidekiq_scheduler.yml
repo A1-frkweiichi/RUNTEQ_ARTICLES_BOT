@@ -18,7 +18,8 @@ post_national_holiday:
   class: "PostToXJob"
   queue: default
 
-#send_gmail:
-#  cron: "0 10 * * 5"  # UTC 10:00 金(5) = JST 19:00 金
-#  class: "SendGmailJob"
-#  queue: default
+send_gmail:
+  cron: "*/10 * * * *"  # 本番環境 動作確認
+  # cron: "0 22 * * 5"  # UTC 22:00 金(5) = JST 7:00 土
+  class: "SendGmailJob"
+  queue: default

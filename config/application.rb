@@ -42,12 +42,21 @@ module RunteqArticlesBot
 end
 
 if Rails.env.production?
-  credentials_content = ENV.fetch('GOOGLE_APPLICATION_CREDENTIALS', nil)
-  credentials_file = Rails.root.join('config', 'gcp_service_account_key.json')
+  begin
+    spreadsheet_credentials_content = ENV.fetch('GOOGLE_APPLICATION_CREDENTIALS')
+    spreadsheet_credentials_file = Rails.root.join('config', 'gcp_service_account_key.json')
+    File.write(spreadsheet_credentials_file, spreadsheet_credentials_content)
+    ENV['GOOGLE_APPLICATION_CREDENTIALS'] = spreadsheet_credentials_file.to_s
 
-  File.write(credentials_file, credentials_content)
-
-  ENV['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_file.to_s
+    gmail_credentials_content = ENV.fetch('GMAIL_CREDENTIALS')
+    gmail_credentials_file = Rails.root.join('config', 'Gmail_client_secret.json')
+    File.write(gmail_credentials_file, gmail_credentials_content)
+    ENV['GMAIL_CREDENTIALS'] = gmail_credentials_file.to_s
+  rescue StandardError => e
+    Rails.logger.error "Failed to write credentials file: #{e.message}"
+    raise e
+  end
 else
   ENV['GOOGLE_APPLICATION_CREDENTIALS'] ||= Rails.root.join('config', 'GCP_service_account_key.json').to_s
+  ENV['GMAIL_CREDENTIALS'] ||= Rails.root.join('config', 'Gmail_client_secret.json').to_s
 end
