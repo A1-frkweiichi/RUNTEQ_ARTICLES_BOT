@@ -11,11 +11,13 @@ class OauthController < ApplicationController
     authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, token_store)
     user_id = 'default'
 
-    authorizer.get_and_store_credentials_from_code(
+    credentials = authorizer.get_and_store_credentials_from_code(
       user_id:,
       code: params[:code],
       base_url: oauth2callback_url
     )
+
+    ENV['GMAIL_TOKEN'] = credentials.to_json
 
     render plain: "認証が完了しました。このウィンドウを閉じて、元の操作を続けてください。"
   end
