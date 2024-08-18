@@ -18,7 +18,7 @@ class OauthController < ApplicationController
     )
 
     # ENV['GMAIL_TOKEN'] = credentials.to_json
-    system("heroku config:set GMAIL_TOKEN='#{credentials.to_json}'")
+    Rails.logger.info("GMAIL_TOKEN: #{credentials.to_json}")
 
     render plain: "認証が完了しました。このウィンドウを閉じて、元の操作を続けてください。"
   end
