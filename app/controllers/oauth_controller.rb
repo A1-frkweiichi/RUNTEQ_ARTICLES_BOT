@@ -17,8 +17,8 @@ class OauthController < ApplicationController
       base_url: oauth2callback_url
     )
 
-    # ENV['GMAIL_TOKEN'] = credentials.to_json
-    Rails.logger.info("GMAIL_TOKEN: #{credentials.to_json}")
+    # ENV['GMAIL_TOKEN'] = credentials.to_json # ローカル環境
+    Rails.logger.info("GMAIL_TOKEN: #{credentials.to_json}") # 本番環境
 
     render plain: "認証が完了しました。このウィンドウを閉じて、元の操作を続けてください。"
   end
