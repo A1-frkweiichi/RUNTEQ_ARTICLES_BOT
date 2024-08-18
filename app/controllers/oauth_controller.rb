@@ -17,7 +17,8 @@ class OauthController < ApplicationController
       base_url: oauth2callback_url
     )
 
-    ENV['GMAIL_TOKEN'] = credentials.to_json
+    # ENV['GMAIL_TOKEN'] = credentials.to_json
+    system("heroku config:set GMAIL_TOKEN='#{credentials.to_json}'")
 
     render plain: "認証が完了しました。このウィンドウを閉じて、元の操作を続けてください。"
   end
