@@ -13,10 +13,10 @@ post_weekend:
   class: "PostToXJob"
   queue: default
 
-post_national_holiday:
-  cron: "0 3 * * 1-5"  # UTC 3:00 月(1)~金(5) = JST 12:00 祝日(土日を除く)
-  class: "PostToXJob"
-  queue: default
+# post_national_holiday:
+#   cron: "0 3 * * 1-5"  # UTC 3:00 月(1)~金(5) = JST 12:00 祝日(土日を除く)
+#   class: "PostToXJob"
+#   queue: default
 
 send_gmail:
   cron: "0 22 * * 5"  # UTC 22:00 金(5) = JST 7:00 土
