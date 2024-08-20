@@ -1,17 +1,9 @@
-require 'date_helper'
-
 class PostToXJob < ApplicationJob
   queue_as :default
   sidekiq_options retry: 5, backtrace: true
 
   def perform
-    today = Date.today
-
-    if DateHelper.should_post_today?(today)
-      execute_posting_logic
-    else
-      Rails.logger.info "例外処理: #{Time.current}"
-    end
+    execute_posting_logic
   rescue StandardError => e
     Bugsnag.notify(e)
     raise e
