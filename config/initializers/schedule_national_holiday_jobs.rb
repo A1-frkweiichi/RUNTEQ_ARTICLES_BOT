@@ -1,4 +1,4 @@
-if Rails.env.production? || Rails.env.development?
+Rails.application.config.after_initialize do
   scheduled_dates = [
     DateTime.new(2024, 9, 16, 3, 0, 0),
     DateTime.new(2024, 9, 23, 3, 0, 0),
@@ -9,6 +9,6 @@ if Rails.env.production? || Rails.env.development?
   ]
 
   scheduled_dates.each do |date|
-    PostToXJob.perform_at(date)
+    PostToXJob.set(wait_until: date).perform_later
   end
 end
