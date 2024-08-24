@@ -61,6 +61,12 @@ class GmailService
       @logger.error("Authorization required. Please visit the URL: #{url}")
       raise "Authorization failed. Please visit the URL to authorize the application."
     else
+      if credentials.expired?
+        @logger.info("Access token expired. Refreshing token...")
+        credentials.refresh!
+        @logger.info("Token refreshed successfully.")
+        ENV['GMAIL_TOKEN'] = credentials.to_json if Rails.env.production?
+      end
       @logger.info("Authorization successful.")
     end
 
