@@ -29,26 +29,26 @@ class SendGmailJob < ApplicationJob
     zenn_article_count = Article.where(is_postable: true, is_active: true).zenn.count
 
     <<~BODY
-      投稿状況
+      【投稿状況】
 
       #{post_count_stats}
 
       ------------------------------
 
-      登録記事の合計数: #{total_articles}
+      【登録記事の合計数】 #{total_articles}
 
-      投稿対象の記事数: #{postable_articles}
-      Qiita: #{qiita_article_count}
-      Zenn: #{zenn_article_count}
+      【投稿対象の記事数】 #{postable_articles}
+      - Qiita: #{qiita_article_count}
+      - Zenn: #{zenn_article_count}
 
       ------------------------------
 
-      ユーザーの合計数: #{user_count}
+      【ユーザーの合計数】 #{user_count}
 
-      Qiita: #{qiita_user_count}
+      - Qiita: #{qiita_user_count}
       #{qiita_usernames}
 
-      Zenn: #{zenn_user_count}
+      - Zenn: #{zenn_user_count}
       #{zenn_usernames}
 
       ------------------------------
