@@ -1,6 +1,6 @@
 class FetchArticlesJob < ApplicationJob
   queue_as :default
-  sidekiq_options retry: 5, backtrace: true
+  sidekiq_options retry: 5, backtrace: true, unique: :until_and_while_executing
 
   def perform(qiita_username = nil, zenn_username = nil)
     if qiita_username || zenn_username

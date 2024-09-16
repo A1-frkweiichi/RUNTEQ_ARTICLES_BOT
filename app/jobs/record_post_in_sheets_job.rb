@@ -1,6 +1,6 @@
 class RecordPostInSheetsJob < ApplicationJob
   queue_as :default
-  sidekiq_options retry: 5, backtrace: true
+  sidekiq_options retry: 5, backtrace: true, unique: :until_and_while_executing
 
   def perform(params)
     article = Article.find_by(id: params[:article_id])
