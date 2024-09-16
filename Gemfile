@@ -44,6 +44,7 @@ gem "redis-activesupport"
 gem "redis-rails"
 gem "sidekiq"
 gem "sidekiq-scheduler"
+gem "sidekiq-unique-jobs"
 gem "x"
 
 group :development, :test do
