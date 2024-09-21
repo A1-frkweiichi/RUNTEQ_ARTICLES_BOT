@@ -1,10 +1,11 @@
  <% if @article.user.x_username.present? %>
-  <%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>)は @<%= @article.user.x_username %> さんのおすすめ記事だぞ！
+  <%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>)は @<%= @article.user.x_username %> さんの記事だぞ！
 <% else %>
-  <%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>) のおすすめ記事だぞ！
+  <%= Time.jst.strftime("%m/%d") %>(<%= japanese_day_of_week %>) の記事だぞ！
 <% end %>
 
 <%= @article.title %>
 <%= @article.article_url %>
 
+読んで学んで、いいねもしてくれよな！
 #RUNTEQ <%= @article.source_platform_hashtag %>
