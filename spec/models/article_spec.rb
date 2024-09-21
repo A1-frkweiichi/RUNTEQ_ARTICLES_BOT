@@ -56,6 +56,22 @@ RSpec.describe Article, type: :model do
     end
   end
 
+  describe 'scopes' do
+    describe '.postable' do
+      it 'returns only postable and active articles' do
+        postable_article = create(:article, user:, is_postable: true, is_active: true)
+        not_postable_article = create(:article, user:, is_postable: false, is_active: true)
+        inactive_article = create(:article, user:, is_postable: true, is_active: false)
+
+        postable_articles = Article.postable
+
+        expect(postable_articles).to include(postable_article)
+        expect(postable_articles).not_to include(not_postable_article)
+        expect(postable_articles).not_to include(inactive_article)
+      end
+    end
+  end
+
   describe '.random_postable_article' do
     it 'returns a postable article' do
       create(:article, user:, is_postable: true, is_active: true)
