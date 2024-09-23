@@ -1,6 +1,6 @@
 class PostToXJob < ApplicationJob
   queue_as :default
-  sidekiq_options retry: 1, backtrace: true, unique: :until_and_while_executing
+  sidekiq_options retry: 3, backtrace: true, unique: :until_and_while_executing
 
   def perform
     execute_posting_logic
