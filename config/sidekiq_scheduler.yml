@@ -1,15 +1,15 @@
 fetch_articles:
-  cron: "0 20 * * 0,4"  # UTC 20:00 日(0),木(4) = JST 5:00 月, 金
+  cron: "5 10 * * 0,4"  # UTC 20:00 日(0),木(4) = JST 5:00 月, 金
   class: "FetchArticlesJob"
   queue: default
 
 post_daily:
-  cron: "0 10 * * *"  # UTC 10:00 = JST 19:00
+  cron: "5 10 * * *"  # UTC 10:00 = JST 19:00
   class: "PostToXJob"
   queue: default
 
 post_weekend:
-  cron: "0 3 * * 6,0"  # UTC 3:00 土(6),日(0) = JST 12:00 土, 日
+  # cron: "0 3 * * 6,0"  # UTC 3:00 土(6),日(0) = JST 12:00 土, 日
   class: "PostToXJob"
   queue: default
 
